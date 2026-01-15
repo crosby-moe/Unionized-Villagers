@@ -1,7 +1,7 @@
-package io.github.racoondog.unionizedvillagers.mixin.client;
+package moe.crosby.unionizedvillagers.mixin.client;
 
-import io.github.racoondog.unionizedvillagers.IOshaViolationHolder;
-import io.github.racoondog.unionizedvillagers.UnionizedVillagersClient;
+import moe.crosby.unionizedvillagers.IOshaViolationHolder;
+import moe.crosby.unionizedvillagers.UnionizedVillagersClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;

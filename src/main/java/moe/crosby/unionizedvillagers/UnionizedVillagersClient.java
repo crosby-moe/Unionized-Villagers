@@ -1,4 +1,4 @@
-package io.github.racoondog.unionizedvillagers;
+package moe.crosby.unionizedvillagers;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

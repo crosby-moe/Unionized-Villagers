@@ -1,4 +1,4 @@
-package io.github.racoondog.unionizedvillagers;
+package moe.crosby.unionizedvillagers;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;

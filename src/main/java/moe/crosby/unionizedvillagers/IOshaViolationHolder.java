@@ -1,7 +1,7 @@
-package io.github.racoondog.unionizedvillagers;
+package moe.crosby.unionizedvillagers;
 
 public interface IOshaViolationHolder {
-    String IDENTIFIER = "vb$osha";
+    String IDENTIFIER = "unionized$osha";
 
     void villagerBalancing$setOshaViolationStatus(boolean b);
 

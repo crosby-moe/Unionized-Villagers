@@ -1,6 +1,6 @@
-package io.github.racoondog.unionizedvillagers.mixin;
+package moe.crosby.unionizedvillagers.mixin;
 
-import io.github.racoondog.unionizedvillagers.IOshaViolationHolder;
+import moe.crosby.unionizedvillagers.IOshaViolationHolder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import org.spongepowered.asm.mixin.Final;

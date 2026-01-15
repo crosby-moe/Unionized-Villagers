@@ -1,7 +1,7 @@
-package io.github.racoondog.unionizedvillagers.mixin;
+package moe.crosby.unionizedvillagers.mixin;
 
-import io.github.racoondog.unionizedvillagers.IOshaViolationHolder;
-import io.github.racoondog.unionizedvillagers.WorldUtils;
+import moe.crosby.unionizedvillagers.IOshaViolationHolder;
+import moe.crosby.unionizedvillagers.WorldUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;

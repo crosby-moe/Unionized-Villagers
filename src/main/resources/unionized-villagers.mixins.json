@@ -1,15 +1,15 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.racoondog.unionizedvillagers.mixin",
+  "package": "moe.crosby.unionizedvillagers.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "TradeOfferMixin",
-    "VillagerEntityMixin"
+      "TradeOfferMixin",
+      "VillagerEntityMixin"
   ],
   "client": [
-    "client.MerchantScreenMixin",
-    "client.TradeOfferMixin"
+      "client.MerchantScreenMixin",
+      "client.TradeOfferMixin"
   ],
   "injectors": {
     "defaultRequire": 1

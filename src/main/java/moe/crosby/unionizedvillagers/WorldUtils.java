@@ -1,4 +1,4 @@
-package io.github.racoondog.unionizedvillagers;
+package moe.crosby.unionizedvillagers;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
