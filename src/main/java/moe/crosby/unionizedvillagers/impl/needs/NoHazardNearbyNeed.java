@@ -1,6 +1,8 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
+import moe.crosby.unionizedvillagers.impl.ChunkAwareBlockSweeper;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -15,7 +17,7 @@ import net.minecraft.world.World;
  * Villager need that ensures there are no visible hazards nearby
  */
 public class NoHazardNearbyNeed extends VillagerNeed {
-    private static final double SEARCH_RADIUS = 8d;
+    private static final int SEARCH_RADIUS = 8;
 
     public NoHazardNearbyNeed(Identifier identifier, int priority) {
         super(identifier, priority);
@@ -23,7 +25,24 @@ public class NoHazardNearbyNeed extends VillagerNeed {
 
     @Override
     public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        // todo implement
+        BlockPos origin = villagerEntity.getBlockPos();
+        int minX = origin.getX() - SEARCH_RADIUS;
+        int minY = origin.getY() - SEARCH_RADIUS;
+        int minZ = origin.getZ() - SEARCH_RADIUS;
+        int maxX = origin.getX() + SEARCH_RADIUS;
+        int maxY = origin.getY() + SEARCH_RADIUS;
+        int maxZ = origin.getZ() + SEARCH_RADIUS;
+
+        for (ChunkAwareBlockSweeper it = new ChunkAwareBlockSweeper(world, minX, maxX, minY, maxY, minZ, maxZ); it.hasNext(); ) {
+            ChunkAwareBlockSweeper.Entry entry = it.next();
+
+            if (entry.getState().isIn(UnionizedVillagers.HAZARDS_TAG) && canSee(villagerEntity, entry.getPos())) {
+                debug(villagerEntity, false, () -> "hazard is at " + entry.getPos());
+                return false;
+            }
+        }
+
+        debug(villagerEntity, true, null);
         return true;
     }
 
