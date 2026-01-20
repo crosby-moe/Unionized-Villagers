@@ -54,8 +54,6 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Unique
     private boolean shouldCancel(PlayerEntity customer) {
-        VillagerNeeds.VILLAGER_NEEDS.sort(Comparator.comparingInt(need -> need.priority));
-
         boolean shouldCancel = false;
 
         for (VillagerNeed need : VillagerNeeds.VILLAGER_NEEDS) {

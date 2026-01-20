@@ -5,6 +5,7 @@ import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.needs.*;
 import net.minecraft.util.Identifier;
 
+import java.util.Comparator;
 import java.util.List;
 
 public final class VillagerNeeds {
@@ -25,17 +26,21 @@ public final class VillagerNeeds {
     public static final VillagerNeed GUARDIAN = register("guardian", GuardianNeed::new, 7);
     public static final VillagerNeed IN_HOME_VILLAGE = register("in_home_village", InHomeVillageNeed::new, 8);
 
-    public static VillagerNeed register(VillagerNeed villagerNeed) {
-        VILLAGER_NEEDS.add(villagerNeed);
-        return villagerNeed;
-    }
-
-    private static VillagerNeed register(String name, VillagerNeedFactory factory, int priority) {
-        return register(factory.create(UnionizedVillagersImpl.id(name), priority));
-    }
-
     @FunctionalInterface
     private interface VillagerNeedFactory {
         VillagerNeed create(Identifier identifier, int priority);
+    }
+
+    // IMPL
+
+    private static VillagerNeed register(String name, VillagerNeedFactory factory, int priority) {
+        VillagerNeed need = factory.create(UnionizedVillagersImpl.id(name), priority);
+        VILLAGER_NEEDS.add(need);
+        return need;
+    }
+
+    public static void initialize() {
+        RegisterVillagerNeed.EVENT.invoker().register(VILLAGER_NEEDS);
+        VillagerNeeds.VILLAGER_NEEDS.sort(Comparator.comparingInt(need -> need.priority));
     }
 }

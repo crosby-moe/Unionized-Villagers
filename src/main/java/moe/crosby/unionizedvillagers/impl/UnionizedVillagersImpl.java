@@ -1,5 +1,6 @@
 package moe.crosby.unionizedvillagers.impl;
 
+import moe.crosby.unionizedvillagers.api.VillagerNeeds;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
@@ -17,6 +18,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        VillagerNeeds.initialize();
     }
 
     public static Identifier id(String path) {
