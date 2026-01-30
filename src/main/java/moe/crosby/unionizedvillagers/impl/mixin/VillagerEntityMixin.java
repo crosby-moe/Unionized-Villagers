@@ -1,15 +1,21 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
+import com.google.common.base.Predicates;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.api.VillagerNeeds;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,6 +23,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
 
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin extends MerchantEntity {
@@ -73,5 +81,23 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
         }
 
         return shouldCancel;
+    }
+
+    @Override
+    public boolean startRiding(Entity entity, boolean force) {
+        if (!force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && getWorld() instanceof ServerWorld world) {
+            // sense villagers
+            int searchDistance = 32;
+            Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
+            List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, searchBox, player -> !player.isInvisible() && !player.isSpectator());
+
+            for (PlayerEntity player : players) {
+                if (this.getVisibilityCache().canSee(player)) {
+                    UnionizedVillagersImpl.emitTrigger(world, player, (VillagerEntity) (Object) this, Text.translatable("unionized-villagers.trigger.kidnapping"));
+                }
+            }
+        }
+
+        return super.startRiding(entity, force);
     }
 }

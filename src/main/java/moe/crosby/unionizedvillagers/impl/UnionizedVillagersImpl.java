@@ -66,18 +66,30 @@ public class UnionizedVillagersImpl implements ModInitializer {
             }
         });
 
-        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
-            if (entity.getWorld() instanceof ServerWorld world && source.getAttacker() instanceof PlayerEntity player && !player.isInvisible() && entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG) && !entity.isInvisible()) {
-                // sense villagers
-                int searchDistance = 32;
-                Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
-                List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
+        // todo implement other triggers:
+        // - breaking structure
 
-                for (VillagerEntity villager : villagers) {
-                    if (villager.getVisibilityCache().canSee(player)) {
-                        emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.attacking_guardian", entity.getDisplayName()));
-                        return true;
+        // todo use villager memories to prevent chat spam when killling golem
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            if (entity.getWorld() instanceof ServerWorld world && source.getAttacker() instanceof PlayerEntity player && !player.isInvisible()) {
+                if (entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG) && !entity.isInvisible()) {
+                    // todo make sensing into util method with optimizations
+                    // sense villagers
+                    int searchDistance = 32;
+                    Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
+                    List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
+
+                    for (VillagerEntity villager : villagers) {
+                        if (villager.getVisibilityCache().canSee(player)) {
+                            emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.attacking_guardian", entity.getDisplayName()));
+                            return true;
+                        }
                     }
+                }
+
+                if (entity instanceof VillagerEntity villager) {
+                    emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.harming_villager"));
+                    return true;
                 }
             }
 
