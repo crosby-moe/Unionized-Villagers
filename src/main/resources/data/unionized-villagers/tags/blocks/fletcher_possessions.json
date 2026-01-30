@@ -1,7 +1,7 @@
 {
     "replace": false,
     "values": [
-        "minecraft:fletching_table",
-        "minecraft:target"
+        "minecraft:target",
+        "#c:fletching_tables"
     ]
 }

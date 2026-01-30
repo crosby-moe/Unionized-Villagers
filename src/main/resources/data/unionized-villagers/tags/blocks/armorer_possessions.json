@@ -2,7 +2,7 @@
     "replace": false,
     "values": [
         "minecraft:blast_furnace",
-        "minecraft:smithing_table",
-        "#minecraft:anvil"
+        "#minecraft:anvil",
+        "#c:smithing_tables"
     ]
 }

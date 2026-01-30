@@ -1,7 +1,8 @@
 {
     "replace": false,
     "values": [
-        "minecraft:cartography_table",
-        "minecraft:lodestone"
+        "minecraft:lodestone",
+        "#c:cartography_tables",
+        "#c:chiseled_bookshelves"
     ]
 }

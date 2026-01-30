@@ -1,8 +1,8 @@
 {
     "replace": false,
     "values": [
-        "minecraft:lectern",
-        "minecraft:bookshelf",
-        "minecraft:chiseled_bookshelf"
+        "#c:lecterns",
+        "#c:bookshelves",
+        "#c:chiseled_bookshelves"
     ]
 }
