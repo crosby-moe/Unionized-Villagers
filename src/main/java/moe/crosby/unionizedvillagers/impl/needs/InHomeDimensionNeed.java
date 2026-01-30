@@ -23,7 +23,7 @@ public class InHomeDimensionNeed extends VillagerNeed {
     public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         Optional<GlobalPos> opt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME);
 
-        boolean isMet = opt.isPresent() && opt.get().getDimension() == world.getRegistryKey();
+        boolean isMet = opt.isEmpty() || opt.get().getDimension() == world.getRegistryKey();
 
         debug(villagerEntity, isMet, () -> "home is in " + opt.map(GlobalPos::getDimension).map(RegistryKey::getValue).orElse(null));
 

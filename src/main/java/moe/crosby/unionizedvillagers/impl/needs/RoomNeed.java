@@ -49,15 +49,15 @@ public class RoomNeed extends VillagerNeed {
 
             if (count > 0) {
                 // attempt to move down
-                if (footHeight < EPSILON && headHeight(world, shapeContext, footPos.up(2)) > headSize) {
+                if (footHeight < EPSILON && headHeight(world, shapeContext, footPos.up()) > headSize) {
                     BlockPos newFootPos = footPos.down();
-                    if (world.getBlockState(footPos).getCollisionShape(world, newFootPos, shapeContext).isEmpty()) {
+                    if (footHeight(world, shapeContext, newFootPos) < 1) {
                         footPos = newFootPos;
                     }
                 // attempt to move up
-                } else if (footHeight > walkHeight && footHeight <= jumpHeight && headHeight(world, shapeContext, footPos.up(2)) > headSize) {
+                } else if (footHeight > walkHeight && footHeight < jumpHeight && headHeight(world, shapeContext, footPos.up(2)) > headSize) {
                     BlockPos newFootPos = footPos.up();
-                    if (world.getBlockState(footPos).getCollisionShape(world, newFootPos, shapeContext).isEmpty()) {
+                    if (footHeight(world, shapeContext, newFootPos) < jumpHeight - 1) {
                         footPos = newFootPos;
                     }
                 }

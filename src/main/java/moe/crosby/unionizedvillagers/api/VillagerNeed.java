@@ -21,7 +21,7 @@ public abstract class VillagerNeed {
     public abstract boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity);
 
     protected void debug(VillagerEntity villagerEntity, boolean met, @Nullable Supplier<String> extra) {
-        if (UnionizedVillagersImpl.DEBUG) {
+        if (villagerEntity.getWorld().getGameRules().getBoolean(UnionizedVillagers.DEBUG)) {
             @Nullable String extraString = extra == null ? "" : extra.get();
             UnionizedVillagersImpl.sendDebug(villagerEntity.getWorld(), UnionizedVillagersImpl.of(villagerEntity)
                 .append("Need '%s' is %s%s".formatted(

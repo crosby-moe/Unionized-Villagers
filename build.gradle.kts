@@ -20,6 +20,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${project.properties["loader_version"] as String}")
 
     modImplementation(include(fabricApi.module("fabric-api-base", project.properties["fabric_version"] as String))!!)
+    modImplementation(include(fabricApi.module("fabric-game-rule-api-v1", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-resource-loader-v0", project.properties["fabric_version"] as String))!!)
     modImplementation(include("xyz.nucleoid:server-translations-api:2.0.0+1.20") {
         exclude("net.fabricmc.fabric-api", "fabric-api")

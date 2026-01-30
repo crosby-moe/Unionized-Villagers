@@ -1,0 +1,9 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:poison",
+        "minecraft:wither",
+        "minecraft:weakness",
+        "minecraft:hunger"
+    ]
+}

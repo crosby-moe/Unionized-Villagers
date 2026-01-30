@@ -1,5 +1,6 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.api.VillagerNeeds;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
@@ -8,6 +9,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,8 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Comparator;
 
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin extends MerchantEntity {
@@ -54,14 +54,20 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Unique
     private boolean shouldCancel(PlayerEntity customer) {
+        VillagerEntity villagerEntity = (VillagerEntity) (Object) this;
+
+        boolean shouldDebug = getWorld().getGameRules().getBoolean(UnionizedVillagers.DEBUG);
         boolean shouldCancel = false;
 
         for (VillagerNeed need : VillagerNeeds.VILLAGER_NEEDS) {
-            boolean isMet = need.isMet(getWorld(), (VillagerEntity) (Object) this, customer);
+            boolean isMet = need.isMet(getWorld(), villagerEntity, customer);
 
             shouldCancel |= !isMet;
 
-            if (!UnionizedVillagersImpl.DEBUG && !isMet) {
+            if (!shouldDebug && !isMet) {
+                customer.sendMessage(UnionizedVillagersImpl.of(villagerEntity)
+                        .append(Text.translatable(need.getTranslationKey())));
+
                 break;
             }
         }

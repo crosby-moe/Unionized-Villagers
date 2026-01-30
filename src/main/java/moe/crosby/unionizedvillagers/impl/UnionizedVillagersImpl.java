@@ -1,8 +1,8 @@
 package moe.crosby.unionizedvillagers.impl;
 
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeeds;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -12,13 +12,20 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+import java.lang.invoke.MethodHandles;
+
 public class UnionizedVillagersImpl implements ModInitializer {
     public static final String MODID = "unionized-villagers";
-    public static final boolean DEBUG = FabricLoader.getInstance().isDevelopmentEnvironment() || Boolean.getBoolean("unionized-villagers.debug");
 
     @Override
     public void onInitialize() {
         VillagerNeeds.initialize();
+
+        try {
+            MethodHandles.lookup().ensureInitialized(UnionizedVillagers.class);
+        } catch (IllegalAccessException e) {
+            throw new AssertionError(e);
+        }
     }
 
     public static Identifier id(String path) {

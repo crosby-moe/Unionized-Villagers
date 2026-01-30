@@ -1,3 +1,16 @@
 {
-    "villager-need.unionized-villagers.in_home_dimension.description": "In Home Dimension"
+    "villager-need.unionized-villagers.day_time.description": "I'm too tired!",
+    "villager-need.unionized-villagers.guardian.description": "I won't trade until I have some protection!",
+    "villager-need.unionized-villagers.home.description": "I don't have a bed to sleep in!",
+    "villager-need.unionized-villagers.in_home_dimension.description": "Where is this place?",
+    "villager-need.unionized-villagers.in_home_village.description": "This isn't my home! Bring me back home!",
+    "villager-need.unionized-villagers.light.description": "I can't see anything!",
+    "villager-need.unionized-villagers.no_hazard_nearby.description": "Fire! Fire! Fire!",
+    "villager-need.unionized-villagers.no_monster_nearby.description": "There's a monster nearby! Kill it!",
+    "villager-need.unionized-villagers.no_shared_home.description": "I want to have a home to myself!",
+    "villager-need.unionized-villagers.not_attacked.description": "You're not a friend to me, go away!",
+    "villager-need.unionized-villagers.not_damaged.description": "I'm too injured to work!",
+    "villager-need.unionized-villagers.not_poisoned.description": "I'm too sick to work...",
+    "villager-need.unionized-villagers.room.description": "I'm cramped in here, give me some space!",
+    "villager-need.unionized-villagers.workstation.description": "I don't have a workstation!"
 }

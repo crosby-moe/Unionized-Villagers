@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:fire",
+        "minecraft:soul_fire",
+        "minecraft:campfire",
+        "minecraft:soul_campfire",
+        "minecraft:magma_block",
+        "minecraft:wither_rose",
+        "minecraft:pointed_dripstone",
+        "minecraft:sculk_shrieker"
+    ]
+}
