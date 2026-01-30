@@ -44,7 +44,7 @@ public class ServerPlayerInteractionManagerMixin {
         for (VillagerEntity villager : villagers) {
             TagKey<Block> tag = TagKey.of(RegistryKeys.BLOCK, UnionizedVillagersImpl.id(villager.getVillagerData().getProfession().id() + "_possessions"));
 
-            if (state.isIn(tag) && villager.canSee(player)) {
+            if (state.isIn(tag) && villager.getVisibilityCache().canSee(player)) {
                 world.sendEntityStatus(villager, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
                 ((VillagerEntityInvoker) villager).unionized$sayNo();
                 villager.getGossip().startGossip(player.getUuid(), VillageGossipType.MINOR_NEGATIVE, 25);

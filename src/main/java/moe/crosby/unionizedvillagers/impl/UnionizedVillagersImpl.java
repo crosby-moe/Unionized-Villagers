@@ -49,7 +49,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
                 for (VillagerEntity villager : villagers) {
                     TagKey<EntityType<?>> tag = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id(villager.getVillagerData().getProfession().id() + "_possessions"));
 
-                    if (victim.getType().isIn(tag) && villager.canSee(victim)) {
+                    if (victim.getType().isIn(tag) && villager.getVisibilityCache().canSee(victim)) {
                         world.sendEntityStatus(villager, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
                         ((VillagerEntityInvoker) villager).unionized$sayNo();
                         villager.getGossip().startGossip(player.getUuid(), VillageGossipType.MINOR_NEGATIVE, 25);

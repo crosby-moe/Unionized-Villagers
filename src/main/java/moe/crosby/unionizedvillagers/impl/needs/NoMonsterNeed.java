@@ -35,6 +35,6 @@ public class NoMonsterNeed extends VillagerNeed {
     }
 
     private boolean canSee(VillagerEntity villagerEntity, HostileEntity hostileEntity) {
-        return hostileEntity.isAlive() && !hostileEntity.isInvisible() && villagerEntity.canSee(hostileEntity);
+        return hostileEntity.isAlive() && !hostileEntity.isInvisible() && villagerEntity.getVisibilityCache().canSee(hostileEntity);
     }
 }
