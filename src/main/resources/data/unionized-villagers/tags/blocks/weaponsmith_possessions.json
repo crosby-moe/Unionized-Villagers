@@ -1,0 +1,9 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:smithing_table",
+        "minecraft:grindstone",
+        "minecraft:blast_furnace",
+        "#minecraft:anvil"
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:cartography_table",
+        "minecraft:lodestone"
+    ]
+}
