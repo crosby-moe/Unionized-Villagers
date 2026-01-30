@@ -13,7 +13,7 @@ import net.minecraft.world.GameRules;
 public class UnionizedVillagers {
     public static final GameRules.Key<GameRules.BooleanRule> DEBUG = GameRuleRegistry.register("debugUnionizedVillagers", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(false));
 
-    public static final TagKey<EntityType<?>> GUARDIAN_ENTITY_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id("guardians"));
+    public static final TagKey<EntityType<?>> GUARDIANS_ENTITY_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id("guardians"));
     public static final TagKey<StatusEffect> POISONS_TAG = TagKey.of(RegistryKeys.STATUS_EFFECT, UnionizedVillagersImpl.id("poisons"));
     public static final TagKey<Block> HAZARDS_TAG = TagKey.of(RegistryKeys.BLOCK, UnionizedVillagersImpl.id("hazards"));
 }

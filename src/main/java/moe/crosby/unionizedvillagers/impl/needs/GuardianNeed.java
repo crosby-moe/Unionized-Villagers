@@ -25,7 +25,7 @@ public class GuardianNeed extends VillagerNeed {
     public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         Box searchBox = new Box(villagerEntity.getBlockPos()).expand(SEARCH_RADIUS);
 
-        List<Entity> guardians =  world.getOtherEntities(villagerEntity, searchBox, entity -> entity.isAlive() && !entity.isInvisible() && entity.getType().isIn(UnionizedVillagers.GUARDIAN_ENTITY_TAG));
+        List<Entity> guardians =  world.getOtherEntities(villagerEntity, searchBox, entity -> entity.isAlive() && !entity.isInvisible() && entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG));
         boolean isMet = !guardians.isEmpty();
 
         debug(villagerEntity, isMet, () -> "guardian is at " + (guardians.isEmpty() ? null : guardians.getFirst().getBlockPos()));

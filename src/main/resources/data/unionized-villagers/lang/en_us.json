@@ -12,5 +12,18 @@
     "villager-need.unionized-villagers.not_damaged.description": "I'm too injured to work!",
     "villager-need.unionized-villagers.not_poisoned.description": "I'm too sick to work...",
     "villager-need.unionized-villagers.room.description": "I'm cramped in here, give me some space!",
-    "villager-need.unionized-villagers.workstation.description": "I don't have a workstation!"
+    "villager-need.unionized-villagers.workstation.description": "I don't have a workstation!",
+
+    "unionized-villagers.trigger.breaking_possession": "The %1$s has caught you stealing their wares!",
+    "unionized-villagers.trigger.killing_possession": "The %1$s has caught you murdering their livestock!",
+    "unionized-villagers.trigger.harming_villager": "?",
+    "unionized-villagers.trigger.breaking_workspace": "A villager caught you taking away someone's job!",
+    "unionized-villagers.trigger.breaking_own_workspace": "The %1$s has caught you taking away their job!",
+    "unionized-villagers.trigger.breaking_structure": "A villager saw you breaking one of their structures!",
+    "unionized-villagers.trigger.attacking_guardian": "The %1$s has notified the village of your misdeeds!",
+
+    "unionized-villagers.trigger.killing_guardian": "A Village has lost their %1$s! The Villagers demand compensation!",
+    "unionized-villagers.trigger.kidnapping": "A Villager is being kidnapped! The Villagers respond by refusing to serve you!",
+    "unionized-villagers.trigger.zombified": "A Villager has been killed! The Villagers have gone on strike in protest!",
+    "unionized-villagers.trigger.wandering_trader": "The %1$s has caught %2&s trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!"
 }
