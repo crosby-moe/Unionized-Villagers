@@ -1,5 +1,6 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -16,15 +17,14 @@ import java.util.List;
  * // todo add noise-based
  */
 public class NoMonsterNeed extends VillagerNeed {
-    private static final double SEARCH_DISTANCE = 32d;
-
     public NoMonsterNeed(Identifier identifier, int priority) {
         super(identifier, priority);
     }
 
     @Override
     public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        Box searchBox = new Box(villagerEntity.getBlockPos()).expand(SEARCH_DISTANCE);
+        int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+        Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
 
         List<HostileEntity> monsters = world.getEntitiesByType(TypeFilter.instanceOf(HostileEntity.class), searchBox, monster -> canSee(villagerEntity, monster));
         boolean isMet = monsters.isEmpty();

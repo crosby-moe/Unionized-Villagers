@@ -12,6 +12,7 @@ import net.minecraft.world.GameRules;
 
 public class UnionizedVillagers {
     public static final GameRules.Key<GameRules.BooleanRule> DEBUG = GameRuleRegistry.register("debugUnionizedVillagers", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(false));
+    public static final GameRules.Key<GameRules.IntRule> VIEW_RANGE = GameRuleRegistry.register("villagerViewRange", GameRules.Category.MOBS, GameRuleFactory.createIntRule(32, 1, 128));
 
     public static final TagKey<EntityType<?>> GUARDIANS_ENTITY_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id("guardians"));
     public static final TagKey<StatusEffect> POISONS_TAG = TagKey.of(RegistryKeys.STATUS_EFFECT, UnionizedVillagersImpl.id("poisons"));

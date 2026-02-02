@@ -46,7 +46,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
                 boolean isGuardian = victim.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG);
 
                 // sense villagers
-                int searchDistance = 32;
+                int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
                 Box searchBox = new Box(victim.getBlockPos()).expand(searchDistance);
                 List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 
@@ -75,7 +75,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
                 if (entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG) && !entity.isInvisible()) {
                     // todo make sensing into util method with optimizations
                     // sense villagers
-                    int searchDistance = 32;
+                    int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
                     Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
                     List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 

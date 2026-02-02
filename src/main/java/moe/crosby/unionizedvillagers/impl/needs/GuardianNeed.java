@@ -15,15 +15,14 @@ import java.util.List;
  * Villager need that ensures a villager has a visible golem (or suitable guardian) near
  */
 public class GuardianNeed extends VillagerNeed {
-    private static final double SEARCH_RADIUS = 32d;
-
     public GuardianNeed(Identifier identifier, int priority) {
         super(identifier, priority);
     }
 
     @Override
     public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        Box searchBox = new Box(villagerEntity.getBlockPos()).expand(SEARCH_RADIUS);
+        int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+        Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
 
         List<Entity> guardians =  world.getOtherEntities(villagerEntity, searchBox, entity -> entity.isAlive() && !entity.isInvisible() && entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG));
         boolean isMet = !guardians.isEmpty();

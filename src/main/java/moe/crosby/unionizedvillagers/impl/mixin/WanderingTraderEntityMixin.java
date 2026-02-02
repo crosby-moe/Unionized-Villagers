@@ -1,6 +1,7 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -31,7 +32,7 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
             PlayerEntity player = this.getCustomer();
 
             // sense villagers
-            int searchDistance = 32;
+            int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
             Box searchBox = new Box(this.getBlockPos()).expand(searchDistance);
             List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 

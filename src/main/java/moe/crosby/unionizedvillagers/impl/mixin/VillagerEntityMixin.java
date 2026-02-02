@@ -87,7 +87,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
     public boolean startRiding(Entity entity, boolean force) {
         if (!force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && getWorld() instanceof ServerWorld world) {
             // sense villagers
-            int searchDistance = 32;
+            int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
             Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
             List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, searchBox, player -> !player.isInvisible() && !player.isSpectator());
 

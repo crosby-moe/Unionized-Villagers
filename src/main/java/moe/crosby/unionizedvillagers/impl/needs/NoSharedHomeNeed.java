@@ -1,5 +1,6 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -17,8 +18,6 @@ import java.util.Optional;
  * Villager need that ensures no two villagers share the same home position
  */
 public class NoSharedHomeNeed extends VillagerNeed {
-    private static final double SEARCH_DISTANCE = 32d;
-
     public NoSharedHomeNeed(Identifier identifier, int priority) {
         super(identifier, priority);
     }
@@ -32,7 +31,8 @@ public class NoSharedHomeNeed extends VillagerNeed {
         }
 
         GlobalPos homePos = opt.get();
-        Box searchBox = new Box(homePos.getPos()).expand(SEARCH_DISTANCE);
+        int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+        Box searchBox = new Box(homePos.getPos()).expand(searchRadius);
         List<Entity> villagers = world.getOtherEntities(villagerEntity, searchBox, entity -> isSharingBed(homePos, entity));
         boolean isMet = villagers.isEmpty();
 

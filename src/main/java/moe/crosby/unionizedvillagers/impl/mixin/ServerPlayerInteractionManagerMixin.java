@@ -2,6 +2,7 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
 import com.llamalad7.mixinextras.sugar.Local;
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -38,7 +39,7 @@ public class ServerPlayerInteractionManagerMixin {
         }
 
         // sense villagers
-        int searchDistance = 32;
+        int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(pos).expand(searchDistance);
         List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 

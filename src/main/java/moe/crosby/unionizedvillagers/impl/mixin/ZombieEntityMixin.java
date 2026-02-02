@@ -1,6 +1,7 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -26,7 +27,7 @@ public class ZombieEntityMixin {
         }
 
         // sense villagers
-        int searchDistance = 32;
+        int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(other.getBlockPos()).expand(searchDistance);
         List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, searchBox, entity -> !entity.isInvisible() && !entity.isSpectator());
         List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
