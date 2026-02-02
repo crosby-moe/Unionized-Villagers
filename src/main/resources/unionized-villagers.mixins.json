@@ -4,6 +4,7 @@
     "package": "moe.crosby.unionizedvillagers.impl.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "ServerPlayerEntityMixin",
         "ServerPlayerInteractionManagerMixin",
         "VillagerEntityInvoker",
         "VillagerEntityMixin",
