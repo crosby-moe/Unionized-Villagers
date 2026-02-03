@@ -4,10 +4,13 @@
     "package": "moe.crosby.unionizedvillagers.impl.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "ActivityMixin",
+        "MemoryModuleTypeMixin",
         "ServerPlayerEntityMixin",
         "ServerPlayerInteractionManagerMixin",
         "VillagerEntityInvoker",
         "VillagerEntityMixin",
+        "VillagerTaskListProviderMixin",
         "WanderingTraderEntityMixin",
         "ZombieEntityMixin"
     ],

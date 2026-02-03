@@ -1,12 +1,16 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
-import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.api.VillagerNeeds;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
+import moe.crosby.unionizedvillagers.impl.ai.StrikeTaskList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
+import net.minecraft.village.VillagerData;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,6 +37,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
     @Unique private int tickDelay;
 
     @Shadow protected abstract void sayNo();
+    @Shadow public abstract VillagerData getVillagerData();
 
     private VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);
@@ -99,5 +105,18 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
         }
 
         return super.startRiding(entity, force);
+    }
+
+    @SuppressWarnings("InvalidInjectorMethodSignature")
+    @ModifyExpressionValue(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableList;of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lcom/google/common/collect/ImmutableList;"))
+    private static ImmutableList<MemoryModuleType<?>> addMemoryModule(ImmutableList<MemoryModuleType<?>> original) {
+        return ImmutableList.<MemoryModuleType<?>>builder().addAll(original)
+            .add(UnionizedVillagersImpl.STRIKE_START_TIME)
+            .build();
+    }
+
+    @Inject(method = "initBrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;setCoreActivities(Ljava/util/Set;)V"))
+    private void registerActivityTasks(Brain<VillagerEntity> brain, CallbackInfo ci) {
+        brain.setTaskList(UnionizedVillagersImpl.STRIKE, StrikeTaskList.createStrikeTasks(this.getVillagerData().getProfession(), 0.5f));
     }
 }

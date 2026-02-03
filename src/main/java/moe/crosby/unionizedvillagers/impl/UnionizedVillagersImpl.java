@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKeys;
@@ -30,6 +32,8 @@ import java.util.*;
 
 public class UnionizedVillagersImpl implements ModInitializer {
     public static final String MODID = "unionized-villagers";
+    public static Activity STRIKE;
+    public static MemoryModuleType<Long> STRIKE_START_TIME;
 
     @Override
     public void onInitialize() {
