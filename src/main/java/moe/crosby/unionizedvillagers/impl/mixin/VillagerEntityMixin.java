@@ -2,6 +2,7 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import moe.crosby.unionizedvillagers.api.Severity;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.api.VillagerNeeds;
@@ -95,11 +96,11 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
             // sense villagers
             int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
             Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
-            List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, searchBox, player -> !player.isInvisible() && !player.isSpectator());
+            List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, searchBox, player -> !player.isInvisible() && !player.isSpectator());
 
-            for (PlayerEntity player : players) {
+            for (ServerPlayerEntity player : players) {
                 if (this.getVisibilityCache().canSee(player)) {
-                    UnionizedVillagersImpl.emitTrigger(world, player, (VillagerEntity) (Object) this, Text.translatable("unionized-villagers.trigger.kidnapping"));
+                    UnionizedVillagersImpl.emitTrigger(world, player, (VillagerEntity) (Object) this, Text.translatable("unionized-villagers.trigger.kidnapping"), Severity.MAJOR);
                 }
             }
         }

@@ -56,12 +56,14 @@ public class VillagerStrikeWarningManager {
         return this.cooldownTicks > 0;
     }
 
-    private void increaseWarningLevel() {
+    public boolean increaseWarningLevel(int count) {
         if (!this.isInCooldown()) {
             this.ticksSinceLastWarning = 0;
             this.cooldownTicks = WARN_INCREASE_COOLDOWN;
-            this.setWarningLevel(this.getWarningLevel() + 1);
+            this.setWarningLevel(this.getWarningLevel() + count);
+            return true;
         }
+        return false;
     }
 
     private void decreaseWarningLevel() {

@@ -1,12 +1,13 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
+import moe.crosby.unionizedvillagers.api.Severity;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
@@ -29,15 +30,15 @@ public class ZombieEntityMixin {
         // sense villagers
         int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(other.getBlockPos()).expand(searchDistance);
-        List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, searchBox, entity -> !entity.isInvisible() && !entity.isSpectator());
+        List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, searchBox, entity -> !entity.isInvisible() && !entity.isSpectator());
         List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 
         for (VillagerEntity villager : villagers) {
             if (villager.getVisibilityCache().canSee(other)) {
-                for (Iterator<PlayerEntity> it = players.iterator(); it.hasNext();) {
-                    PlayerEntity player = it.next();
+                for (Iterator<ServerPlayerEntity> it = players.iterator(); it.hasNext();) {
+                    ServerPlayerEntity player = it.next();
                     if (villager.getVisibilityCache().canSee(player)) {
-                        UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.zombified"));
+                        UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.zombified"), Severity.MAJOR);
                         it.remove();
 
                         if (players.isEmpty()) {

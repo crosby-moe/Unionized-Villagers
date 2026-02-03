@@ -1,13 +1,14 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
+import moe.crosby.unionizedvillagers.api.Severity;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
@@ -28,9 +29,7 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 
     @Inject(method = "afterUsing", at = @At("TAIL"))
     private void afterTradeComplete(TradeOffer offer, CallbackInfo ci) {
-        if (getWorld() instanceof ServerWorld world) {
-            PlayerEntity player = this.getCustomer();
-
+        if (getWorld() instanceof ServerWorld world && this.getCustomer() instanceof ServerPlayerEntity player) {
             // sense villagers
             int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
             Box searchBox = new Box(this.getBlockPos()).expand(searchDistance);
@@ -38,7 +37,7 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 
             for (VillagerEntity villager : villagers) {
                 if (villager.getVisibilityCache().canSee(player)) {
-                    UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.wandering_trader", villager.getDisplayName(), player.getDisplayName()));
+                    UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.wandering_trader", villager.getDisplayName(), player.getDisplayName()), Severity.MAJOR);
                     return;
                 }
             }

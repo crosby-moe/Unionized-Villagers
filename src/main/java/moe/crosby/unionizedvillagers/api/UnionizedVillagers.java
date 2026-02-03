@@ -6,9 +6,15 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
+
+import java.util.Collection;
 
 public class UnionizedVillagers {
     public static final GameRules.Key<GameRules.BooleanRule> DEBUG = GameRuleRegistry.register("debugUnionizedVillagers", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(false));
@@ -17,4 +23,12 @@ public class UnionizedVillagers {
     public static final TagKey<EntityType<?>> GUARDIANS_ENTITY_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id("guardians"));
     public static final TagKey<StatusEffect> POISONS_TAG = TagKey.of(RegistryKeys.STATUS_EFFECT, UnionizedVillagersImpl.id("poisons"));
     public static final TagKey<Block> HAZARDS_TAG = TagKey.of(RegistryKeys.BLOCK, UnionizedVillagersImpl.id("hazards"));
+
+    public static void emitTrigger(ServerWorld world, ServerPlayerEntity criminal, VillagerEntity victim, Text feedback, Severity severity) {
+        UnionizedVillagersImpl.emitTrigger(world, criminal, victim, feedback, severity);
+    }
+
+    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, VillagerEntity victim, Text feedback, Severity severity) {
+        UnionizedVillagersImpl.emitTriggers(world, criminals, victim, feedback, severity);
+    }
 }
