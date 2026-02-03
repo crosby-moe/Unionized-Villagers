@@ -24,6 +24,7 @@ dependencies {
     modImplementation(include(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-resource-loader-v0", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-convention-tags-v1", project.properties["fabric_version"] as String))!!)
+    modImplementation(include(fabricApi.module("fabric-command-api-v1", project.properties["fabric_version"] as String))!!)
     modImplementation(include("xyz.nucleoid:server-translations-api:2.0.0+1.20") {
         exclude("net.fabricmc.fabric-api", "fabric-api")
     })

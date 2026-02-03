@@ -25,5 +25,11 @@
     "unionized-villagers.trigger.killing_guardian": "A Village has lost their %1$s! The Villagers demand compensation!",
     "unionized-villagers.trigger.kidnapping": "A Villager is being kidnapped! The Villagers respond by refusing to serve you!",
     "unionized-villagers.trigger.zombified": "A Villager has been killed! The Villagers have gone on strike in protest!",
-    "unionized-villagers.trigger.wandering_trader": "The %1$s has caught %2&s trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!"
+    "unionized-villagers.trigger.wandering_trader": "The %1$s has caught %2&s trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!",
+
+    "unionized-villagers.commands.strike_tracker.get": "%1$s has %2$s strike warnings.",
+    "unionized-villagers.commands.strike_tracker.set.single": "Set strike warnings for %s.",
+    "unionized-villagers.commands.strike_tracker.set.multiple": "Set strike warnings for %s players.",
+    "unionized-villagers.commands.strike_tracker.clear.single": "Cleared strike warnings for %s.",
+    "unionized-villagers.commands.strike_tracker.clear.multiple": "Cleared strike warnings for %s players."
 }

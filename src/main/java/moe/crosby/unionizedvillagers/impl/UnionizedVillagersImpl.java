@@ -3,8 +3,10 @@ package moe.crosby.unionizedvillagers.impl;
 import com.google.common.base.Predicates;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeeds;
+import moe.crosby.unionizedvillagers.impl.commands.StrikeTrackerCommand;
 import moe.crosby.unionizedvillagers.impl.mixin.VillagerEntityInvoker;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
@@ -99,6 +101,10 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
             // i dislike that there's no after damage event, but oh well
             return true;
+        });
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            StrikeTrackerCommand.register(dispatcher);
         });
     }
 
