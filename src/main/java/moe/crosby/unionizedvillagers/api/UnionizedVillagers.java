@@ -1,5 +1,6 @@
 package moe.crosby.unionizedvillagers.api;
 
+import com.google.common.collect.ImmutableList;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
@@ -11,7 +12,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
 import java.util.Collection;
@@ -24,11 +24,25 @@ public class UnionizedVillagers {
     public static final TagKey<StatusEffect> POISONS_TAG = TagKey.of(RegistryKeys.STATUS_EFFECT, UnionizedVillagersImpl.id("poisons"));
     public static final TagKey<Block> HAZARDS_TAG = TagKey.of(RegistryKeys.BLOCK, UnionizedVillagersImpl.id("hazards"));
 
-    public static void emitTrigger(ServerWorld world, ServerPlayerEntity criminal, VillagerEntity victim, Text feedback, Severity severity) {
-        UnionizedVillagersImpl.emitTrigger(world, criminal, victim, feedback, severity);
+    /**
+     * @param world the world
+     * @param criminal the player who caused the trigger
+     * @param victim the victim villager (not necessarily witness)
+     * @param witness the villager who witness the trigger (not necessarily victim)
+     * @param trigger the trigger
+     */
+    public static void emitTrigger(ServerWorld world, ServerPlayerEntity criminal, VillagerEntity victim, VillagerEntity witness, StrikeTrigger trigger) {
+        emitTriggers(world, ImmutableList.of(criminal), victim, witness, trigger);
     }
 
-    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, VillagerEntity victim, Text feedback, Severity severity) {
-        UnionizedVillagersImpl.emitTriggers(world, criminals, victim, feedback, severity);
+    /**
+     * @param world the world
+     * @param criminals the players who caused, or did not prevent the trigger
+     * @param victim the victim villager (not necessarily witness)
+     * @param witness the villager who witness the trigger (not necessarily victim)
+     * @param trigger the trigger
+     */
+    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, VillagerEntity victim, VillagerEntity witness, StrikeTrigger trigger) {
+        UnionizedVillagersImpl.emitTriggers(world, criminals, victim, witness, trigger);
     }
 }

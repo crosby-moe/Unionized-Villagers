@@ -2,6 +2,7 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
 import com.llamalad7.mixinextras.sugar.Local;
+import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.block.Block;
@@ -13,7 +14,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
@@ -51,7 +51,7 @@ public class ServerPlayerInteractionManagerMixin {
 
             if (jobOpt.isPresent() && jobOpt.get().getDimension() == world.getRegistryKey() && jobOpt.get().getPos().equals(pos)) {
                 if (villager.getVisibilityCache().canSee(player)) {
-                    UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.breaking_own_workspace", villager.getDisplayName()));
+                    UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.BREAKING_OWN_WORKSPACE);
                     return;
                 } else {
                     isJobSite = true;
@@ -62,7 +62,7 @@ public class ServerPlayerInteractionManagerMixin {
         for (VillagerEntity villager : villagers) {
             // check if breaking other's workstation
             if (isJobSite && villager.getVisibilityCache().canSee(player)) {
-                UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.breaking_workspace"));
+                UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.BREAKING_WORKSPACE);
                 return;
             }
 
@@ -70,7 +70,7 @@ public class ServerPlayerInteractionManagerMixin {
             TagKey<Block> tag = TagKey.of(RegistryKeys.BLOCK, UnionizedVillagersImpl.id(villager.getVillagerData().getProfession().id() + "_possessions"));
 
             if (state.isIn(tag) && villager.getVisibilityCache().canSee(player)) {
-                UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.breaking_possession", villager.getDisplayName()));
+                UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.BREAKING_POSSESSION);
                 return;
             }
         }

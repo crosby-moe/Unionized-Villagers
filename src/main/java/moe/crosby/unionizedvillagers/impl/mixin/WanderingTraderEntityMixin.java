@@ -1,16 +1,14 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.base.Predicates;
-import moe.crosby.unionizedvillagers.api.Severity;
+import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
-import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.world.World;
@@ -37,7 +35,7 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 
             for (VillagerEntity villager : villagers) {
                 if (villager.getVisibilityCache().canSee(player)) {
-                    UnionizedVillagersImpl.emitTrigger(world, player, villager, Text.translatable("unionized-villagers.trigger.wandering_trader", villager.getDisplayName(), player.getDisplayName()), Severity.MAJOR);
+                    UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.ILLEGAL_TRADING);
                     return;
                 }
             }
