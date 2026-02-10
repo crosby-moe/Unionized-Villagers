@@ -18,7 +18,7 @@ public final class VillagerNeeds {
     public static final VillagerNeed DAY_TIME = register("day_time", DayTimeNeed::new, 3);
     public static final VillagerNeed WORKSTATION = register("workstation", WorkstationNeed::new, 3);
     public static final VillagerNeed HOME = register("home", HomeNeed::new, 3);
-    public static final VillagerNeed NO_SHARED_HOME = register("no_shared_home", NoSharedHomeNeed::new, 4);
+    public static final VillagerNeed NO_ADJACENT_WORKSTATION = register("no_adjacent_workstation", NoAdjacentWorkstationNeed::new, 4);
     public static final VillagerNeed LIGHT = register("light", LightNeed::new, 4);
     public static final VillagerNeed NO_MONSTER_NEARBY = register("no_monster_nearby", NoMonsterNeed::new, 5);
     public static final VillagerNeed NO_HAZARD_NEARBY = register("no_hazard_nearby", NoHazardNearbyNeed::new, 5);
