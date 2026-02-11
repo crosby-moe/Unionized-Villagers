@@ -12,6 +12,7 @@
         "VillagerEntityMixin",
         "VillagerTaskListProviderMixin",
         "WanderingTraderEntityMixin",
+        "WorldInvoker",
         "ZombieEntityMixin"
     ],
     "injectors": {

@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import moe.crosby.unionizedvillagers.api.*;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTaskList;
+import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
@@ -17,7 +18,6 @@ import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Box;
 import net.minecraft.village.VillagerData;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -92,8 +92,8 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
         if (!force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && getWorld() instanceof ServerWorld world) {
             // sense villagers
             int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
-            Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
-            List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, searchBox, player -> !player.isInvisible() && !player.isSpectator() && this.getVisibilityCache().canSee(player));
+
+            List<ServerPlayerEntity> players = EntitySensing.getEntities(world, EntitySensing.PLAYER_FILTER, entity.getBlockPos(), searchDistance, player -> EntitySensing.isVisible(player) && this.getVisibilityCache().canSee(player));
 
             VillagerEntity villager = (VillagerEntity) (Object) this;
             UnionizedVillagers.emitTriggers(world, players, villager, villager, StrikeTriggers.KIDNAPPING);

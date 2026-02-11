@@ -1,8 +1,8 @@
 package moe.crosby.unionizedvillagers.impl;
 
-import com.google.common.base.Predicates;
 import moe.crosby.unionizedvillagers.api.*;
 import moe.crosby.unionizedvillagers.impl.commands.StrikeTrackerCommand;
+import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
 import moe.crosby.unionizedvillagers.impl.mixin.VillagerEntityInvoker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -23,9 +23,10 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -51,22 +52,21 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
                 // sense villagers
                 int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
-                Box searchBox = new Box(victim.getBlockPos()).expand(searchDistance);
-                List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
-
-                for (VillagerEntity villager : villagers) {
+                EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, victim.getBlockPos(), searchDistance, villager -> {
                     if (isGuardian && villager.getVisibilityCache().canSee(player)) {
                         UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.KILLING_GUARDIAN);
-                        return;
+                        return LazyIterationConsumer.NextIteration.ABORT;
                     }
 
                     TagKey<EntityType<?>> tag = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id(villager.getVillagerData().getProfession().id() + "_possessions"));
 
                     if (victim.getType().isIn(tag) && villager.getVisibilityCache().canSee(player)) {
                         UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.KILLING_POSSESSION);
-                        return;
+                        return LazyIterationConsumer.NextIteration.ABORT;
                     }
-                }
+
+                    return LazyIterationConsumer.NextIteration.CONTINUE;
+                });
             }
         });
 
@@ -75,19 +75,14 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
         // todo use villager memories to prevent chat spam when killling golem
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
-            if (entity.getWorld() instanceof ServerWorld world && source.getAttacker() instanceof ServerPlayerEntity player && !player.isInvisible()) {
-                if (entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG) && !entity.isInvisible()) {
-                    // todo make sensing into util method with optimizations
+            if (entity.getWorld() instanceof ServerWorld world && source.getAttacker() instanceof ServerPlayerEntity player && EntitySensing.isVisible(player)) {
+                if (entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG) && EntitySensing.isVisible(entity)) {
                     // sense villagers
                     int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
-                    Box searchBox = new Box(entity.getBlockPos()).expand(searchDistance);
-                    List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
-
-                    for (VillagerEntity villager : villagers) {
-                        if (villager.getVisibilityCache().canSee(player)) {
-                            UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.ATTACKING_GUARDIAN);
-                            return true;
-                        }
+                    @Nullable VillagerEntity witness = EntitySensing.getFirst(world, EntitySensing.VILLAGER_FILTER, entity.getBlockPos(), searchDistance, villager -> villager.getVisibilityCache().canSee(player));
+                    if (witness != null) {
+                        UnionizedVillagers.emitTrigger(world, player, witness, witness, StrikeTriggers.ATTACKING_GUARDIAN);
+                        return true;
                     }
                 }
 
@@ -116,7 +111,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
             .append("] ");
     }
 
-    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, VillagerEntity victim, VillagerEntity witness, StrikeTrigger trigger) {
+    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, Entity victim, VillagerEntity witness, StrikeTrigger trigger) {
         boolean causesStrike = false;
 
         for (ServerPlayerEntity criminal : criminals) {
@@ -129,29 +124,35 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
                 criminal.sendMessage(Text.empty().formatted(Formatting.YELLOW).append(feedback));
 
-                world.sendEntityStatus(victim, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
-                ((VillagerEntityInvoker) victim).unionized$sayNo();
-                victim.getGossip().startGossip(criminal.getUuid(), VillageGossipType.MINOR_NEGATIVE, 25);
+                if (victim instanceof VillagerEntity villager) {
+                    world.sendEntityStatus(villager, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
+                    ((VillagerEntityInvoker) villager).unionized$sayNo();
+                    villager.getGossip().startGossip(criminal.getUuid(), VillageGossipType.MINOR_NEGATIVE, 25);
+                }
+
+                world.sendEntityStatus(witness, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
+                ((VillagerEntityInvoker) witness).unionized$sayNo();
+                witness.getGossip().startGossip(criminal.getUuid(), VillageGossipType.MINOR_NEGATIVE, 25);
 
                 causesStrike |= strikeWarningManager.getWarningLevel() >= 3;
             }
         }
 
         if (causesStrike) {
-            beginStrike(world, victim);
+            beginStrike(world, witness);
         }
     }
 
     private static void beginStrike(ServerWorld world, VillagerEntity leader) {
         // sense villagers
         int searchDistance = Math.max(world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE), 48);
-        Box searchBox = new Box(leader.getBlockPos()).expand(searchDistance);
-        List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 
-        for (VillagerEntity villager : villagers) {
+        EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, leader.getBlockPos(), searchDistance, villager -> {
             villager.getBrain().remember(STRIKE_START_TIME, world.getTime());
             villager.getBrain().doExclusively(STRIKE);
-        }
+
+            return LazyIterationConsumer.NextIteration.CONTINUE;
+        });
     }
 
     public static void sendDebug(World world, Text debugText) {

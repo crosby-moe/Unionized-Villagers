@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
+import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -15,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,8 +40,7 @@ public class ServerPlayerInteractionManagerMixin {
 
         // sense villagers
         int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
-        Box searchBox = new Box(pos).expand(searchDistance);
-        List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
+        List<VillagerEntity> villagers = EntitySensing.getEntities(world, EntitySensing.VILLAGER_FILTER, pos, searchDistance, Predicates.alwaysTrue());
 
         boolean isJobSite = false;
 

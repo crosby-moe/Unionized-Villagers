@@ -1,4 +1,4 @@
-package moe.crosby.unionizedvillagers.impl;
+package moe.crosby.unionizedvillagers.impl.lithography;
 
 import com.google.common.collect.AbstractIterator;
 import net.minecraft.block.BlockState;

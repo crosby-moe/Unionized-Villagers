@@ -3,11 +3,13 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 import com.google.common.base.Predicates;
 import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
+import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.Box;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,9 +31,8 @@ public class ZombieEntityMixin {
         int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(other.getBlockPos()).expand(searchDistance);
         List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, searchBox, entity -> !entity.isInvisible() && !entity.isSpectator());
-        List<VillagerEntity> villagers = world.getEntitiesByClass(VillagerEntity.class, searchBox, Predicates.alwaysTrue());
 
-        for (VillagerEntity villager : villagers) {
+        EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, other.getBlockPos(), searchDistance, villager -> {
             if (villager.getVisibilityCache().canSee(other)) {
                 for (Iterator<ServerPlayerEntity> it = players.iterator(); it.hasNext();) {
                     ServerPlayerEntity player = it.next();
@@ -40,11 +41,13 @@ public class ZombieEntityMixin {
                         it.remove();
 
                         if (players.isEmpty()) {
-                            return;
+                            return LazyIterationConsumer.NextIteration.ABORT;
                         }
                     }
                 }
             }
-        }
+
+            return LazyIterationConsumer.NextIteration.CONTINUE;
+        });
     }
 }

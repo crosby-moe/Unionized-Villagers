@@ -5,6 +5,7 @@ import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -31,7 +32,7 @@ public class UnionizedVillagers {
      * @param witness the villager who witness the trigger (not necessarily victim)
      * @param trigger the trigger
      */
-    public static void emitTrigger(ServerWorld world, ServerPlayerEntity criminal, VillagerEntity victim, VillagerEntity witness, StrikeTrigger trigger) {
+    public static void emitTrigger(ServerWorld world, ServerPlayerEntity criminal, Entity victim, VillagerEntity witness, StrikeTrigger trigger) {
         emitTriggers(world, ImmutableList.of(criminal), victim, witness, trigger);
     }
 
@@ -42,7 +43,7 @@ public class UnionizedVillagers {
      * @param witness the villager who witness the trigger (not necessarily victim)
      * @param trigger the trigger
      */
-    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, VillagerEntity victim, VillagerEntity witness, StrikeTrigger trigger) {
+    public static void emitTriggers(ServerWorld world, Collection<ServerPlayerEntity> criminals, Entity victim, VillagerEntity witness, StrikeTrigger trigger) {
         UnionizedVillagersImpl.emitTriggers(world, criminals, victim, witness, trigger);
     }
 }
