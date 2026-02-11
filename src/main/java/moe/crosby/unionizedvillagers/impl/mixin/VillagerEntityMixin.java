@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import moe.crosby.unionizedvillagers.api.*;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTaskList;
-import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
+import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;

@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
-import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
+import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;

@@ -2,7 +2,7 @@ package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import moe.crosby.unionizedvillagers.impl.lithography.ChunkAwareBlockSweeper;
+import moe.crosby.unionizedvillagers.impl.fast.ChunkAwareBlockSweeper;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;

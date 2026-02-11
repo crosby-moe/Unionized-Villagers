@@ -2,7 +2,7 @@ package moe.crosby.unionizedvillagers.impl;
 
 import moe.crosby.unionizedvillagers.api.*;
 import moe.crosby.unionizedvillagers.impl.commands.StrikeTrackerCommand;
-import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
+import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import moe.crosby.unionizedvillagers.impl.mixin.VillagerEntityInvoker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;

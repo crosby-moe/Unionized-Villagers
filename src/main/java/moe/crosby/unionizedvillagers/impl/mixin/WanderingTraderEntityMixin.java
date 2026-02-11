@@ -2,7 +2,7 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 
 import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
-import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
+import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;

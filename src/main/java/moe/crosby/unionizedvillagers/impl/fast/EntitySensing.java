@@ -1,4 +1,4 @@
-package moe.crosby.unionizedvillagers.impl.lithography;
+package moe.crosby.unionizedvillagers.impl.fast;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import moe.crosby.unionizedvillagers.impl.mixin.WorldInvoker;

@@ -1,12 +1,10 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
-import com.google.common.base.Predicates;
 import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
-import moe.crosby.unionizedvillagers.impl.lithography.EntitySensing;
+import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.LazyIterationConsumer;
