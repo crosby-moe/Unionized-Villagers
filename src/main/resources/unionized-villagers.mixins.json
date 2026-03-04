@@ -10,6 +10,7 @@
         "RaycastContextAccessor",
         "ServerPlayerEntityMixin",
         "ServerPlayerInteractionManagerMixin",
+        "TradeOutputSlotMixin",
         "VillagerEntityInvoker",
         "VillagerEntityMixin",
         "VillagerTaskListProviderMixin",

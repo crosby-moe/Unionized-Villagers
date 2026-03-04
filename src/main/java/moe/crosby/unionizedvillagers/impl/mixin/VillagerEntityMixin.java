@@ -3,8 +3,10 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import moe.crosby.unionizedvillagers.api.*;
+import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTaskList;
+import moe.crosby.unionizedvillagers.impl.ai.StrikeTradeOffers;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -15,11 +17,17 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,14 +36,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 @Mixin(VillagerEntity.class)
-public abstract class VillagerEntityMixin extends MerchantEntity {
+public abstract class VillagerEntityMixin extends MerchantEntity implements IVillagerEntity {
     @Unique private static final int RECHECK_DELAY_TICKS = 4;
     @Unique private int tickDelay;
+    @Unique private @Nullable TradeOfferList savedStrikeTrades;
 
     @Shadow protected abstract void sayNo();
     @Shadow public abstract VillagerData getVillagerData();
+
+    @Shadow
+    public abstract Brain<VillagerEntity> getBrain();
 
     private VillagerEntityMixin(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);
@@ -66,6 +79,10 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Unique
     private boolean shouldCancel(PlayerEntity customer) {
+        if (this.unionized$isInStrike()) { // can always trade during a strike
+            return false;
+        }
+
         VillagerEntity villagerEntity = (VillagerEntity) (Object) this;
 
         boolean shouldDebug = getWorld().getGameRules().getBoolean(UnionizedVillagers.DEBUG);
@@ -102,7 +119,6 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
         return super.startRiding(entity, force);
     }
 
-    @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyExpressionValue(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableList;of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lcom/google/common/collect/ImmutableList;"))
     private static ImmutableList<MemoryModuleType<?>> addMemoryModule(ImmutableList<MemoryModuleType<?>> original) {
         return ImmutableList.<MemoryModuleType<?>>builder().addAll(original)
@@ -113,5 +129,68 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
     @Inject(method = "initBrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;setCoreActivities(Ljava/util/Set;)V"))
     private void registerActivityTasks(Brain<VillagerEntity> brain, CallbackInfo ci) {
         brain.setTaskList(UnionizedVillagersImpl.STRIKE, StrikeTaskList.createStrikeTasks(this.getVillagerData().getProfession(), 0.5f));
+    }
+
+    // Handle trade serialization
+
+    @Unique
+    private static final String KEY = "unionized$StrikeOffers";
+
+    @Override
+    public void unionized$endStrike() {
+        this.savedStrikeTrades = null;
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        @Nullable TradeOfferList savedOffers = this.savedStrikeTrades;
+        if (savedOffers != null && !savedOffers.isEmpty()) {
+            nbt.put(KEY, savedOffers.toNbt());
+        }
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains(KEY, NbtElement.COMPOUND_TYPE)) {
+            this.savedStrikeTrades = new TradeOfferList(nbt.getCompound(KEY));
+        }
+    }
+
+    // Modify trades on strike
+
+    @Override
+    public boolean unionized$isInStrike() {
+        return this.getBrain().hasActivity(UnionizedVillagersImpl.STRIKE) && this.getBrain().getOptionalRegisteredMemory(UnionizedVillagersImpl.STRIKE_START_TIME).isPresent();
+    }
+
+    @Unique
+    private TradeOfferList getStrikeOffers() {
+        if (this.savedStrikeTrades != null) {
+            return this.savedStrikeTrades;
+        }
+
+        TradeOfferList tradeOffers = new TradeOfferList();
+        this.fillRecipesFromPool(tradeOffers, StrikeTradeOffers.OFFERS, 1);
+        return this.savedStrikeTrades = tradeOffers;
+    }
+
+    @Override
+    public void sendOffers(PlayerEntity player, Text test, int levelProgress) {
+        if (this.unionized$isInStrike()) {
+            // copies super
+            OptionalInt optionalInt = player.openHandledScreen(
+                new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new MerchantScreenHandler(syncId, playerInventory, this), test)
+            );
+            if (optionalInt.isPresent()) {
+                TradeOfferList tradeOfferList = this.getStrikeOffers();
+                if (!tradeOfferList.isEmpty()) {
+                    player.sendTradeOffers(optionalInt.getAsInt(), tradeOfferList, levelProgress, this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
+                }
+            }
+        } else {
+            super.sendOffers(player, test, levelProgress);
+        }
     }
 }

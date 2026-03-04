@@ -27,6 +27,8 @@
     "unionized-villagers.trigger.zombified": "A Villager has been killed! The Villagers have gone on strike in protest!",
     "unionized-villagers.trigger.illegal_trading": "The %2$s has caught %3&s trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!",
 
+    "unionized-villagers.text.end_strike": "End Strike!",
+
     "unionized-villagers.commands.strike_tracker.get": "%1$s has %2$s strike warnings.",
     "unionized-villagers.commands.strike_tracker.set.single": "Set strike warnings for %s.",
     "unionized-villagers.commands.strike_tracker.set.multiple": "Set strike warnings for %s players.",
