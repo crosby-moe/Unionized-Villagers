@@ -1,7 +1,9 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.mojang.datafixers.util.Pair;
 import moe.crosby.unionizedvillagers.api.*;
 import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
@@ -11,6 +13,7 @@ import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -128,7 +131,11 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
 
     @Inject(method = "initBrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;setCoreActivities(Ljava/util/Set;)V"))
     private void registerActivityTasks(Brain<VillagerEntity> brain, CallbackInfo ci) {
-        brain.setTaskList(UnionizedVillagersImpl.STRIKE, StrikeTaskList.createStrikeTasks(this.getVillagerData().getProfession(), 0.5f));
+        brain.setTaskList(
+            UnionizedVillagersImpl.STRIKE,
+            StrikeTaskList.createStrikeTasks(this.getVillagerData().getProfession(), 0.5f),
+            ImmutableSet.of(Pair.of(UnionizedVillagersImpl.STRIKE_START_TIME, MemoryModuleState.VALUE_PRESENT))
+        );
     }
 
     // Handle trade serialization
@@ -141,18 +148,16 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         this.savedStrikeTrades = null;
     }
 
-    @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    private void writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
         @Nullable TradeOfferList savedOffers = this.savedStrikeTrades;
         if (savedOffers != null && !savedOffers.isEmpty()) {
             nbt.put(KEY, savedOffers.toNbt());
         }
     }
 
-    @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    private void readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains(KEY, NbtElement.COMPOUND_TYPE)) {
             this.savedStrikeTrades = new TradeOfferList(nbt.getCompound(KEY));
         }

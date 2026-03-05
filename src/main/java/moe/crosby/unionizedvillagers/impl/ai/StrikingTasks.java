@@ -12,7 +12,7 @@ public class StrikingTasks {
         return TaskTriggerer.task(
             context -> context.group(context.queryMemoryValue(UnionizedVillagersImpl.STRIKE_START_TIME)).apply(context, strikeStartTime -> (world, entity, time) -> {
                 long l = context.getValue(strikeStartTime);
-                if (l + STRIKE_LENGTH_TICKS <= time) {
+                if (l + STRIKE_LENGTH_TICKS > time) {
                     entity.getBrain().doExclusively(UnionizedVillagersImpl.STRIKE);
                 }
                 return true;
@@ -24,7 +24,7 @@ public class StrikingTasks {
         return TaskTriggerer.task(
             context -> context.group(context.queryMemoryValue(UnionizedVillagersImpl.STRIKE_START_TIME)).apply(context, strikeStartTime -> (world, entity, time) -> {
                 long l = context.getValue(strikeStartTime);
-                if (l + STRIKE_LENGTH_TICKS > time) {
+                if (l + STRIKE_LENGTH_TICKS <= time) {
                     strikeStartTime.forget();
                     entity.getBrain().refreshActivities(world.getTimeOfDay(), world.getTime());
                 }
