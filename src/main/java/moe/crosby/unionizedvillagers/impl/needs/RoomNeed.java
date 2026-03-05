@@ -81,7 +81,8 @@ public class RoomNeed extends VillagerNeed {
 
         boolean isMet = count >= AREA;
 
-        debug(villagerEntity, isMet, null);
+        int finalCount = count;
+        debug(villagerEntity, isMet, () -> "has " + finalCount + " blocks of free space out of " + AREA + " required");
 
         return isMet;
     }

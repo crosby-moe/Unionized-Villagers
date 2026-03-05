@@ -3,6 +3,8 @@ package moe.crosby.unionizedvillagers.api;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -24,11 +26,9 @@ public abstract class VillagerNeed {
         if (villagerEntity.getWorld().getGameRules().getBoolean(UnionizedVillagers.DEBUG)) {
             @Nullable String extraString = extra == null ? "" : extra.get();
             UnionizedVillagersImpl.sendDebug(villagerEntity.getWorld(), UnionizedVillagersImpl.of(villagerEntity)
-                .append("Need '%s' is %s%s".formatted(
-                    this.identifier,
-                    met ? "met" : "unmet",
-                    extraString == null ? "" : ", " + extraString
-                )));
+                .append("Need '" + this.identifier + "' is ")
+                .append(Text.literal(met ? "met" : "unmet").formatted(met ? Formatting.GREEN : Formatting.RED))
+                .append(extraString == null ? "" : ", " + extraString));
         }
     }
 
