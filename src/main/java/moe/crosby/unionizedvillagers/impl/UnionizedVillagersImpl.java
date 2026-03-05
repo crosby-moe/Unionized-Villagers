@@ -14,10 +14,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -147,9 +150,30 @@ public class UnionizedVillagersImpl implements ModInitializer {
         // sense villagers
         int searchDistance = Math.max(world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE), 48);
 
+        // start strike
         EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, leader.getBlockPos(), searchDistance, villager -> {
             villager.getBrain().remember(STRIKE_START_TIME, world.getTime());
             villager.getBrain().doExclusively(STRIKE);
+
+            return LazyIterationConsumer.NextIteration.CONTINUE;
+        });
+
+        // play sound effect
+        EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, leader.getBlockPos(), searchDistance + 16, player -> {
+            double distance = player.distanceTo(leader);
+            double x = player.getX() + 13.0 / distance * (leader.getX() - player.getX());
+            double z = player.getZ() + 13.0 / distance * (leader.getZ() - player.getZ());
+
+            if (distance <= searchDistance + 16) {
+                player.networkHandler.sendPacket(new PlaySoundS2CPacket(
+                    SoundEvents.EVENT_RAID_HORN,
+                    SoundCategory.NEUTRAL,
+                    x, player.getY(), z,
+                    64f,
+                    1f,
+                    world.getRandom().nextLong()
+                ));
+            }
 
             return LazyIterationConsumer.NextIteration.CONTINUE;
         });
