@@ -182,6 +182,15 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
     }
 
     @Override
+    public TradeOfferList getOffers() {
+        if (this.unionized$isInStrike()) {
+            return this.getStrikeOffers();
+        } else {
+            return super.getOffers();
+        }
+    }
+
+    @Override
     public void sendOffers(PlayerEntity player, Text test, int levelProgress) {
         if (this.unionized$isInStrike()) {
             // copies super
