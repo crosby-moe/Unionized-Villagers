@@ -9,6 +9,7 @@ import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTaskList;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTradeOffers;
+import moe.crosby.unionizedvillagers.impl.ai.StrikingTexts;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -203,6 +204,8 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
                     player.sendTradeOffers(optionalInt.getAsInt(), tradeOfferList, levelProgress, this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
                 }
             }
+
+            player.sendMessage(UnionizedVillagersImpl.of(this).append(Text.translatable(StrikingTexts.get(this.getRandom()))));
         } else {
             super.sendOffers(player, test, levelProgress);
         }

@@ -28,6 +28,10 @@
     "unionized-villagers.trigger.illegal_trading": "The %2$s has caught %3&s trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!",
 
     "unionized-villagers.text.end_strike": "End Strike!",
+    "unionized-villagers.text.common_striking_1": "We are not your farms!",
+    "unionized-villagers.text.common_striking_2": "No Nose! No Service!",
+    "unionized-villagers.text.common_striking_3": "Our Village, not yours!",
+    "unionized-villagers.text.rare_striking_1": "I just wanted to be included",
 
     "unionized-villagers.commands.strike_tracker.get": "%1$s has %2$s strike warnings.",
     "unionized-villagers.commands.strike_tracker.set.single": "Set strike warnings for %s.",
