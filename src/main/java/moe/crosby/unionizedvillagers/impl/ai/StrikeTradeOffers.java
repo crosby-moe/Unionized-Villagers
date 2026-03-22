@@ -8,6 +8,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 
+import java.util.Objects;
+
 public class StrikeTradeOffers {
     private static final String KEY = "unionized-villagers.text.end_strike";
 
@@ -25,6 +27,12 @@ public class StrikeTradeOffers {
         ItemStack endStrikeStack = Items.EMERALD.getDefaultStack();
         endStrikeStack.setCustomName(Text.translatable(KEY).formatted(Formatting.GREEN));
         END_STRIKE_STACK = endStrikeStack;
+    }
+
+    public static boolean isEndStrikeStack(ItemStack stack) {
+        return stack.isOf(END_STRIKE_STACK.getItem()) && stack.getCount() == END_STRIKE_STACK.getCount() && stack.hasNbt()
+            ? (stack.getNbt() != null ? Objects.equals(stack.getNbt(), END_STRIKE_STACK.getNbt()) : END_STRIKE_STACK.getNbt() == null)
+            : stack.hasNbt() == END_STRIKE_STACK.hasNbt();
     }
 
     private static TradeOffers.Factory create(Item item, int count) {
