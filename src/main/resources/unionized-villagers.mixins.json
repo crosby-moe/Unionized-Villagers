@@ -6,6 +6,8 @@
     "mixins": [
         "ActivityMixin",
         "LivingEntityMixin",
+        "LootableContainerBlockEntityAccessor",
+        "LootableContainerBlockEntityMixin",
         "MemoryModuleTypeMixin",
         "RaycastContextAccessor",
         "ServerPlayerEntityMixin",

@@ -22,6 +22,7 @@ dependencies {
     modImplementation(include(fabricApi.module("fabric-api-base", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-game-rule-api-v1", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))!!)
+    modImplementation(include(fabricApi.module("fabric-events-interaction-v0", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-resource-loader-v0", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-convention-tags-v1", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-command-api-v1", project.properties["fabric_version"] as String))!!)

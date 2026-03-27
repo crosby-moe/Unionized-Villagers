@@ -16,6 +16,7 @@
 
     "unionized-villagers.trigger.breaking_possession": "The %1$s has caught you stealing their wares!",
     "unionized-villagers.trigger.killing_possession": "The %1$s has caught you murdering their livestock!",
+    "unionized-villagers.trigger.stealing_possession": "The %1$s has caught you stealing their wares!",
     "unionized-villagers.trigger.harming_villager": "Ouch!",
     "unionized-villagers.trigger.breaking_workspace": "A villager caught you taking away someone's job!",
     "unionized-villagers.trigger.breaking_own_workspace": "The %1$s has caught you taking away their job!",

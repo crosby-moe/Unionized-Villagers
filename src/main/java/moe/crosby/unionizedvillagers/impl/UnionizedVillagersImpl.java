@@ -1,13 +1,18 @@
 package moe.crosby.unionizedvillagers.impl;
 
 import moe.crosby.unionizedvillagers.api.*;
+import moe.crosby.unionizedvillagers.impl.ai.VillagerPossessions;
 import moe.crosby.unionizedvillagers.impl.commands.StrikeTrackerCommand;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
+import moe.crosby.unionizedvillagers.impl.mixin.LootableContainerBlockEntityAccessor;
 import moe.crosby.unionizedvillagers.impl.mixin.VillagerEntityInvoker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -28,6 +33,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.village.VillageGossipType;
+import net.minecraft.village.VillagerData;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,6 +103,24 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
             // i dislike that there's no after damage event, but oh well
             return true;
+        });
+
+        PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
+            if (world instanceof ServerWorld serverWorld && player instanceof ServerPlayerEntity serverPlayer && blockEntity instanceof ChestBlockEntity chest && EntitySensing.isVisible(serverPlayer)) {
+                @Nullable Identifier lootTableId = ((LootableContainerBlockEntityAccessor) chest).unionized$getLootTableId();
+                if (lootTableId != null && lootTableId.getPath().startsWith("chests/village/")) {
+                    int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+                    EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, chest.getPos(), searchDistance, villager -> {
+                        VillagerData data = villager.getVillagerData();
+
+                        if (VillagerPossessions.isVillagerPossession(data, lootTableId) && villager.getVisibilityCache().canSee(player)) {
+                            UnionizedVillagers.emitTrigger(serverWorld, serverPlayer, villager, villager, StrikeTriggers.STEALING_POSSESSION);
+                        }
+
+                        return LazyIterationConsumer.NextIteration.CONTINUE;
+                    });
+                }
+            }
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
