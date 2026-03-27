@@ -40,9 +40,7 @@ public class TradeOutputSlotMixin {
                 // disable striking state
                 int searchDistance = Math.max(world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE), 48) + 16;
                 EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, villager.getBlockPos(), searchDistance, innerVillager -> {
-                    innerVillager.getBrain().forget(UnionizedVillagersImpl.STRIKE_START_TIME);
-                    innerVillager.getBrain().resetPossibleActivities();
-
+                    UnionizedVillagersImpl.endStrike(innerVillager);
                     return LazyIterationConsumer.NextIteration.CONTINUE;
                 });
 

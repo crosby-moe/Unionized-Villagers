@@ -209,6 +209,12 @@ public class UnionizedVillagersImpl implements ModInitializer {
         });
     }
 
+    public static void endStrike(VillagerEntity villager) {
+        villager.getBrain().forget(UnionizedVillagersImpl.STRIKE_START_TIME);
+        villager.getBrain().resetPossibleActivities();
+        ((IVillagerEntity) villager).unionized$endStrike();
+    }
+
     public static void sendDebug(World world, Text debugText) {
         for (ServerPlayerEntity player : world.getServer().getPlayerManager().getPlayerList()) {
             player.sendMessage(debugText);
