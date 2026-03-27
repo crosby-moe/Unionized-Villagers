@@ -61,15 +61,23 @@ public class UnionizedVillagersImpl implements ModInitializer {
                 // sense villagers
                 int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
                 EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, victim.getBlockPos(), searchDistance, villager -> {
+                    // killing guardian
                     if (isGuardian && villager.getVisibilityCache().canSee(player)) {
                         UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.KILLING_GUARDIAN);
                         return LazyIterationConsumer.NextIteration.ABORT;
                     }
 
+                    // killing possession
                     TagKey<EntityType<?>> tag = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id(villager.getVillagerData().getProfession().id() + "_possessions"));
 
                     if (victim.getType().isIn(tag) && villager.getVisibilityCache().canSee(player)) {
                         UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.KILLING_POSSESSION);
+                        return LazyIterationConsumer.NextIteration.ABORT;
+                    }
+
+                    // killing villager
+                    if (victim instanceof VillagerEntity) {
+                        UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.KILLING_VILLAGER);
                         return LazyIterationConsumer.NextIteration.ABORT;
                     }
 

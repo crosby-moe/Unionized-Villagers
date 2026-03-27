@@ -23,6 +23,7 @@
     "unionized-villagers.trigger.breaking_structure": "A villager saw you breaking one of their structures!",
     "unionized-villagers.trigger.attacking_guardian": "The %1$s has notified the village of your misdeeds!",
 
+    "unionized-villagers.trigger.killing_villager": "A Village has caught you murdering their %1$s! You monster!",
     "unionized-villagers.trigger.killing_guardian": "A Village has lost their %1$s! The Villagers demand compensation!",
     "unionized-villagers.trigger.kidnapping": "A Villager is being kidnapped! The Villagers respond by refusing to serve you!",
     "unionized-villagers.trigger.zombified": "A Villager has been killed! The Villagers have gone on strike in protest!",
