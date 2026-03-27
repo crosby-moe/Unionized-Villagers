@@ -2,6 +2,7 @@ package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
+import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +15,6 @@ import java.util.List;
 
 /**
  * Villager need that ensures a villager does not have a visible monster near
- * // todo add noise-based
  */
 public class NoMonsterNeed extends VillagerNeed {
     public NoMonsterNeed(Identifier identifier, int priority) {
@@ -23,6 +23,11 @@ public class NoMonsterNeed extends VillagerNeed {
 
     @Override
     public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+        if (((IVillagerEntity) villagerEntity).unionized$heardMonsterNoise()) {
+            debug(villagerEntity, false, () -> "heard monster");
+            return false;
+        }
+
         int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
 

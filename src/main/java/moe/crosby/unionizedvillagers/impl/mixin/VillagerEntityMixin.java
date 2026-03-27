@@ -47,6 +47,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
     @Unique private static final int RECHECK_DELAY_TICKS = 4;
     @Unique private int tickDelay;
     @Unique private @Nullable TradeOfferList savedStrikeTrades;
+    @Unique private int lastHeardMonsterNoise = Integer.MAX_VALUE;
 
     @Shadow protected abstract void sayNo();
     @Shadow public abstract VillagerData getVillagerData();
@@ -137,6 +138,16 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
             StrikeTaskList.createStrikeTasks(this.getVillagerData().getProfession(), 0.5f),
             ImmutableSet.of(Pair.of(UnionizedVillagersImpl.STRIKE_START_TIME, MemoryModuleState.VALUE_PRESENT))
         );
+    }
+
+    @Override
+    public void unionized$triggerMonsterNoise() {
+        this.lastHeardMonsterNoise = this.age;
+    }
+
+    @Override
+    public boolean unionized$heardMonsterNoise() {
+        return this.lastHeardMonsterNoise + 500 < this.age;
     }
 
     // Handle trade serialization
