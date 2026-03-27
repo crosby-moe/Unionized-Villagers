@@ -217,7 +217,9 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
     public static void sendDebug(World world, Text debugText) {
         for (ServerPlayerEntity player : world.getServer().getPlayerManager().getPlayerList()) {
-            player.sendMessage(debugText);
+            if (player.hasPermissionLevel(2)) {
+                player.sendMessage(debugText);
+            }
         }
     }
 }
