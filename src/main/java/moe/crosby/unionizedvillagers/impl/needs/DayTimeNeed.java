@@ -3,8 +3,8 @@ package moe.crosby.unionizedvillagers.impl.needs;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
 /**
  * Villager need that ensures it is not night
@@ -15,7 +15,7 @@ public class DayTimeNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         boolean isMet = !world.isNight();
         debug(villagerEntity, isMet, null);
         return isMet;

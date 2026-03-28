@@ -6,10 +6,10 @@ import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -22,13 +22,13 @@ public class NoMonsterNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         if (((IVillagerEntity) villagerEntity).unionized$heardMonsterNoise()) {
             debug(villagerEntity, false, () -> "heard monster");
             return false;
         }
 
-        int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+        int searchRadius = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
 
         List<HostileEntity> monsters = world.getEntitiesByType(TypeFilter.instanceOf(HostileEntity.class), searchBox, monster -> canSee(villagerEntity, monster));

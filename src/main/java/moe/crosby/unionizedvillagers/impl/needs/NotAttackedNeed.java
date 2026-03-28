@@ -6,8 +6,8 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public class NotAttackedNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         Optional<LivingEntity> hurtByEntityMemory = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HURT_BY_ENTITY);
         if (hurtByEntityMemory.isPresent() && hurtByEntityMemory.get() == playerEntity) {
             debug(villagerEntity, false, () -> "villager attacked by " + hurtByEntityMemory.get().getName().getString());

@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(RaycastContext.class)
 public interface RaycastContextAccessor {
-    @Accessor("entityPosition")
+    @Accessor("shapeContext")
     ShapeContext unionized$getShapeContext();
 }

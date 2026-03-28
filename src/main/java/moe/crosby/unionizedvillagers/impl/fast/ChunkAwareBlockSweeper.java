@@ -40,8 +40,8 @@ public class ChunkAwareBlockSweeper extends AbstractIterator<ChunkAwareBlockSwee
 
         this.minX = minX;
         this.maxX = maxX;
-        this.minY = MathHelper.clamp(minY, this.world.getBottomY(), this.world.getTopY());
-        this.maxY = MathHelper.clamp(maxY, this.world.getBottomY(), this.world.getTopY());
+        this.minY = MathHelper.clamp(minY, this.world.getBottomY(), this.world.getTopYInclusive());
+        this.maxY = MathHelper.clamp(maxY, this.world.getBottomY(), this.world.getTopYInclusive());
         this.minZ = minZ;
         this.maxZ = maxZ;
 

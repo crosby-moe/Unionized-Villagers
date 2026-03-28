@@ -4,8 +4,8 @@ import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
 /**
  * Villager need that ensures a minimum amount of light on the villager
@@ -18,7 +18,7 @@ public class LightNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         boolean nightVision = villagerEntity.hasStatusEffect(StatusEffects.NIGHT_VISION);
 
         if (nightVision) {

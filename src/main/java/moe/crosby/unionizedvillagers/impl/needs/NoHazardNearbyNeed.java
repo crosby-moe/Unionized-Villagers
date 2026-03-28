@@ -5,13 +5,13 @@ import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.impl.fast.ChunkAwareBlockSweeper;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
 
 /**
  * Villager need that ensures there are no visible hazards nearby
@@ -24,7 +24,7 @@ public class NoHazardNearbyNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         BlockPos origin = villagerEntity.getBlockPos();
         int minX = origin.getX() - SEARCH_RADIUS;
         int minY = origin.getY() - SEARCH_RADIUS;
@@ -50,7 +50,8 @@ public class NoHazardNearbyNeed extends VillagerNeed {
         Vec3d startPos = new Vec3d(villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ());
         Vec3d endPos = Vec3d.ofCenter(blockPos);
 
-        BlockHitResult result = villagerEntity.getWorld().raycast(new RaycastContext(
+        // todo replace with faster raycast
+        BlockHitResult result = villagerEntity.getEntityWorld().raycast(new RaycastContext(
             startPos,
             endPos,
             RaycastContext.ShapeType.VISUAL,

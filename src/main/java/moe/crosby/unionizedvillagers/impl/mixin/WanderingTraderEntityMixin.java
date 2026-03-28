@@ -24,9 +24,9 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
 
     @Inject(method = "afterUsing", at = @At("TAIL"))
     private void afterTradeComplete(TradeOffer offer, CallbackInfo ci) {
-        if (getWorld() instanceof ServerWorld world && this.getCustomer() instanceof ServerPlayerEntity player && EntitySensing.isVisible(player)) {
+        if (getEntityWorld() instanceof ServerWorld world && this.getCustomer() instanceof ServerPlayerEntity player && EntitySensing.isVisible(player)) {
             // sense villagers
-            int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+            int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
             EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, this.getBlockPos(), searchDistance, villager -> {
                 if (villager.getVisibilityCache().canSee(player)) {
                     UnionizedVillagers.emitTrigger(world, player, villager, villager, StrikeTriggers.ILLEGAL_TRADING);

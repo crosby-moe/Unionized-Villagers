@@ -1,5 +1,6 @@
 package moe.crosby.unionizedvillagers.impl.ai;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -7,8 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
-
-import java.util.Objects;
+import net.minecraft.village.TradedItem;
 
 public class StrikeTradeOffers {
     private static final String KEY = "unionized-villagers.text.end_strike";
@@ -25,21 +25,15 @@ public class StrikeTradeOffers {
 
     static {
         ItemStack endStrikeStack = Items.EMERALD.getDefaultStack();
-        endStrikeStack.setCustomName(Text.translatable(KEY).formatted(Formatting.GREEN));
+        endStrikeStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(KEY).formatted(Formatting.GREEN));
         END_STRIKE_STACK = endStrikeStack;
     }
 
     public static boolean isEndStrikeStack(ItemStack stack) {
-        return stack.isOf(END_STRIKE_STACK.getItem()) && stack.getCount() == END_STRIKE_STACK.getCount() && stack.hasNbt()
-            ? (stack.getNbt() != null ? Objects.equals(stack.getNbt(), END_STRIKE_STACK.getNbt()) : END_STRIKE_STACK.getNbt() == null)
-            : stack.hasNbt() == END_STRIKE_STACK.hasNbt();
+        return stack.isOf(END_STRIKE_STACK.getItem()) && stack.getCount() == END_STRIKE_STACK.getCount() && stack.getComponentChanges().equals(END_STRIKE_STACK.getComponentChanges());
     }
 
     private static TradeOffers.Factory create(Item item, int count) {
-        return (entity, random) -> {
-            ItemStack stack = item.getDefaultStack();
-            stack.setCount(count);
-            return new TradeOffer(stack, END_STRIKE_STACK, 1, 0, 0);
-        };
+        return (world, entity, random) -> new TradeOffer(new TradedItem(item, count), END_STRIKE_STACK, 1, 0, 0);
     }
 }

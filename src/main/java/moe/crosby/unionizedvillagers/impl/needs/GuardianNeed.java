@@ -5,9 +5,9 @@ import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -20,8 +20,8 @@ public class GuardianNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+        int searchRadius = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
 
         List<Entity> guardians =  world.getOtherEntities(villagerEntity, searchBox, entity -> entity.isAlive() && !entity.isInvisible() && entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG));

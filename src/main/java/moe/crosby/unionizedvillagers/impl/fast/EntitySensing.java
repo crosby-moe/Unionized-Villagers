@@ -44,7 +44,7 @@ public class EntitySensing {
             return LazyIterationConsumer.NextIteration.CONTINUE;
         });
 
-        return reference.getValue();
+        return reference.get();
     }
 
     public static <E extends Entity> List<E> getEntities(World world, TypeFilter<Entity, E> type, BlockPos origin, int radius, Predicate<E> filter) {

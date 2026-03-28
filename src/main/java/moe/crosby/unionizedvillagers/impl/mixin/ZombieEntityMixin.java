@@ -4,6 +4,7 @@ import moe.crosby.unionizedvillagers.api.StrikeTriggers;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -19,14 +20,14 @@ import java.util.List;
 
 @Mixin(ZombieEntity.class)
 public class ZombieEntityMixin {
-    @Inject(method = "onKilledOther", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieVillagerEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/entity/EntityData;"))
-    private void onZombification(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "onKilledOther", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieEntity;infectVillager(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/passive/VillagerEntity;)Z"))
+    private void onZombification(ServerWorld world, LivingEntity other, DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         if (other.isInvisible()) {
             return;
         }
 
         // sense villagers
-        int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+        int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(other.getBlockPos()).expand(searchDistance);
         List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, searchBox, entity -> !entity.isInvisible() && !entity.isSpectator());
 

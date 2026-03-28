@@ -4,9 +4,9 @@ import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
 
 import java.util.Optional;
 
@@ -19,12 +19,12 @@ public class HomeNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         Optional<GlobalPos> homeOpt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME);
 
         boolean isMet = homeOpt.isPresent();
 
-        debug(villagerEntity, isMet, () -> "home is at " + homeOpt.map(GlobalPos::getPos).orElse(null));
+        debug(villagerEntity, isMet, () -> "home is at " + homeOpt.map(GlobalPos::pos).orElse(null));
 
         return isMet;
     }

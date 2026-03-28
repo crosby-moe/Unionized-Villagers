@@ -21,16 +21,17 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -88,32 +89,38 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
             return false;
         }
 
-        VillagerEntity villagerEntity = (VillagerEntity) (Object) this;
+        if (this.getEntityWorld() instanceof ServerWorld serverWorld) {
+            VillagerEntity villagerEntity = (VillagerEntity) (Object) this;
 
-        boolean shouldDebug = getWorld().getGameRules().getBoolean(UnionizedVillagers.DEBUG);
-        boolean shouldCancel = false;
+            boolean shouldDebug = serverWorld.getGameRules().getValue(UnionizedVillagers.DEBUG);
+            boolean shouldCancel = false;
 
-        for (VillagerNeed need : VillagerNeeds.VILLAGER_NEEDS) {
-            boolean isMet = need.isMet(getWorld(), villagerEntity, customer);
+            for (VillagerNeed need : VillagerNeeds.VILLAGER_NEEDS) {
+                boolean isMet = need.isMet(serverWorld, villagerEntity, customer);
 
-            shouldCancel |= !isMet;
+                shouldCancel |= !isMet;
 
-            if (!shouldDebug && !isMet) {
-                customer.sendMessage(UnionizedVillagersImpl.of(villagerEntity)
-                        .append(Text.translatable(need.getTranslationKey())));
+                if (!shouldDebug && !isMet) {
+                    customer.sendMessage(UnionizedVillagersImpl.of(villagerEntity)
+                        .append(Text.translatable(need.getTranslationKey())), false);
 
-                break;
+                    break;
+                }
             }
-        }
 
-        return shouldCancel;
+            return shouldCancel;
+        } else {
+            return false;
+        }
     }
 
+
+
     @Override
-    public boolean startRiding(Entity entity, boolean force) {
-        if (!force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && getWorld() instanceof ServerWorld world) {
+    public boolean startRiding(Entity entity, boolean force, boolean emitEvent) {
+        if (!force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && this.getEntityWorld() instanceof ServerWorld world) {
             // sense villagers
-            int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+            int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
 
             List<ServerPlayerEntity> players = EntitySensing.getEntities(world, EntitySensing.PLAYER_FILTER, entity.getBlockPos(), searchDistance, player -> EntitySensing.isVisible(player) && this.getVisibilityCache().canSee(player));
 
@@ -121,11 +128,11 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
             UnionizedVillagers.emitTriggers(world, players, villager, villager, StrikeTriggers.KIDNAPPING);
         }
 
-        return super.startRiding(entity, force);
+        return super.startRiding(entity, force, emitEvent);
     }
 
     @ModifyExpressionValue(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableList;of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lcom/google/common/collect/ImmutableList;"))
-    private static ImmutableList<MemoryModuleType<?>> addMemoryModule(ImmutableList<MemoryModuleType<?>> original) {
+    private static ImmutableList<@NotNull MemoryModuleType<?>> addMemoryModule(ImmutableList<@NotNull MemoryModuleType<?>> original) {
         return ImmutableList.<MemoryModuleType<?>>builder().addAll(original)
             .add(UnionizedVillagersImpl.STRIKE_START_TIME)
             .build();
@@ -135,7 +142,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
     private void registerActivityTasks(Brain<VillagerEntity> brain, CallbackInfo ci) {
         brain.setTaskList(
             UnionizedVillagersImpl.STRIKE,
-            StrikeTaskList.createStrikeTasks(this.getVillagerData().getProfession(), 0.5f),
+            StrikeTaskList.createStrikeTasks(this.getVillagerData().profession(), 0.5f),
             ImmutableSet.of(Pair.of(UnionizedVillagersImpl.STRIKE_START_TIME, MemoryModuleState.VALUE_PRESENT))
         );
     }
@@ -160,19 +167,17 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         this.savedStrikeTrades = null;
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
-    private void writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
+    @Inject(method = "writeCustomData", at = @At("TAIL"))
+    private void writeCustomData(WriteView view, CallbackInfo ci) {
         @Nullable TradeOfferList savedOffers = this.savedStrikeTrades;
         if (savedOffers != null && !savedOffers.isEmpty()) {
-            nbt.put(KEY, savedOffers.toNbt());
+            view.put(KEY, TradeOfferList.CODEC, savedOffers);
         }
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    private void readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains(KEY, NbtElement.COMPOUND_TYPE)) {
-            this.savedStrikeTrades = new TradeOfferList(nbt.getCompound(KEY));
-        }
+    @Inject(method = "readCustomData", at = @At("TAIL"))
+    private void readCustomDataFromNbt(ReadView view, CallbackInfo ci) {
+        this.savedStrikeTrades = view.read(KEY, TradeOfferList.CODEC).orElse(null);
     }
 
     // Modify trades on strike
@@ -189,7 +194,9 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         }
 
         TradeOfferList tradeOffers = new TradeOfferList();
-        this.fillRecipesFromPool(tradeOffers, StrikeTradeOffers.OFFERS, 1);
+        if (this.getEntityWorld() instanceof ServerWorld serverWorld) {
+            this.fillRecipesFromPool(serverWorld, tradeOffers, StrikeTradeOffers.OFFERS, 1);
+        }
         return this.savedStrikeTrades = tradeOffers;
     }
 
@@ -216,7 +223,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
                 }
             }
 
-            player.sendMessage(UnionizedVillagersImpl.of(this).append(Text.translatable(StrikingTexts.get(this.getRandom()))));
+            player.sendMessage(UnionizedVillagersImpl.of(this).append(Text.translatable(StrikingTexts.get(this.getRandom()))), false);
         } else {
             super.sendOffers(player, test, levelProgress);
         }

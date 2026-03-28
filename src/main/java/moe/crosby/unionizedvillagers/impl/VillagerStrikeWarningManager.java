@@ -12,9 +12,9 @@ import java.util.Set;
 public class VillagerStrikeWarningManager {
     public static final Codec<VillagerStrikeWarningManager> CODEC = RecordCodecBuilder.create(
         instance -> instance.group(
-                Codecs.NONNEGATIVE_INT.fieldOf("ticks_since_last_warning").orElse(0).forGetter(manager -> manager.ticksSinceLastWarning),
-                Codecs.NONNEGATIVE_INT.fieldOf("warning_level").orElse(0).forGetter(manager -> manager.warningLevel),
-                Codecs.NONNEGATIVE_INT.fieldOf("cooldown_ticks").orElse(0).forGetter(manager -> manager.cooldownTicks)
+                Codecs.NON_NEGATIVE_INT.fieldOf("ticks_since_last_warning").orElse(0).forGetter(manager -> manager.ticksSinceLastWarning),
+                Codecs.NON_NEGATIVE_INT.fieldOf("warning_level").orElse(0).forGetter(manager -> manager.warningLevel),
+                Codecs.NON_NEGATIVE_INT.fieldOf("cooldown_ticks").orElse(0).forGetter(manager -> manager.cooldownTicks)
             )
             .apply(instance, VillagerStrikeWarningManager::new)
     );
@@ -31,6 +31,10 @@ public class VillagerStrikeWarningManager {
         this.ticksSinceLastWarning = ticksSinceLastWarning;
         this.warningLevel = warningLevel;
         this.cooldownTicks = cooldownTicks;
+    }
+
+    public VillagerStrikeWarningManager() {
+        this(0, 0, 0);
     }
 
     public void tick() {

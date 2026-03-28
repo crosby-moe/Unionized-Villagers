@@ -1,16 +1,11 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
-import com.mojang.serialization.Dynamic;
 import moe.crosby.unionizedvillagers.impl.IServerPlayerEntity;
 import moe.crosby.unionizedvillagers.impl.VillagerStrikeWarningManager;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,27 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin implements IServerPlayerEntity {
-    @Shadow @Final private static Logger LOGGER;
-
     @Unique private static final String KEY = "unionized$villager_strike_tracker";
-    @Unique private VillagerStrikeWarningManager villagerStrikeWarningManager = new VillagerStrikeWarningManager(0, 0, 0);
+    @Unique private VillagerStrikeWarningManager villagerStrikeWarningManager = new VillagerStrikeWarningManager();
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
-    private void deserializeManager(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains(KEY, NbtElement.COMPOUND_TYPE)) {
-            VillagerStrikeWarningManager.CODEC
-                .parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get(KEY)))
-                .resultOrPartial(LOGGER::error)
-                .ifPresent(manager -> this.villagerStrikeWarningManager = manager);
-        }
+    @Inject(method = "readCustomData", at = @At("RETURN"))
+    private void deserializeManager(ReadView view, CallbackInfo ci) {
+        this.villagerStrikeWarningManager = view.read(KEY, VillagerStrikeWarningManager.CODEC).orElseGet(VillagerStrikeWarningManager::new);
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
-    private void serializeManager(NbtCompound nbt, CallbackInfo ci) {
-        VillagerStrikeWarningManager.CODEC
-            .encodeStart(NbtOps.INSTANCE, this.villagerStrikeWarningManager)
-            .resultOrPartial(LOGGER::error)
-            .ifPresent(encoded -> nbt.put(KEY, encoded));
+    @Inject(method = "writeCustomData", at = @At("RETURN"))
+    private void serializeManager(WriteView view, CallbackInfo ci) {
+        view.put(KEY, VillagerStrikeWarningManager.CODEC, this.villagerStrikeWarningManager);
     }
 
     @Inject(method = "tick", at = @At("RETURN"))

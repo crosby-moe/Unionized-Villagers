@@ -23,7 +23,7 @@ public abstract class MobEntityMixin extends LivingEntity {
     @SuppressWarnings("ConstantValue")
     @Inject(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;playAmbientSound()V"))
     private void monsterNoises(CallbackInfo ci) {
-        if (this.getWorld() instanceof ServerWorld serverWorld && (Object) this instanceof HostileEntity) {
+        if (this.getEntityWorld() instanceof ServerWorld serverWorld && (Object) this instanceof HostileEntity) {
             EntitySensing.forEach(serverWorld, EntitySensing.VILLAGER_FILTER, this.getBlockPos(), 16, villager -> {
                 ((IVillagerEntity) villager).unionized$triggerMonsterNoise();
 

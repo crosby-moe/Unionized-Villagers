@@ -9,7 +9,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
@@ -21,11 +20,11 @@ public class NoAdjacentWorkstationNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         Optional<GlobalPos> jobOpt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
 
-        if (world instanceof ServerWorld serverWorld && jobOpt.isPresent() && jobOpt.get().getDimension() == world.getRegistryKey()) {
-            BlockPos jobPos = jobOpt.get().getPos();
+        if (world instanceof ServerWorld serverWorld && jobOpt.isPresent() && jobOpt.get().dimension() == world.getRegistryKey()) {
+            BlockPos jobPos = jobOpt.get().pos();
 
             Optional<BlockPos> otherPos = serverWorld.getPointOfInterestStorage().getInSquare(
                 poi -> poi.isIn(PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE),

@@ -5,9 +5,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
 
 import java.util.Optional;
 
@@ -20,12 +20,12 @@ public class InHomeDimensionNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         Optional<GlobalPos> opt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME);
 
-        boolean isMet = opt.isEmpty() || opt.get().getDimension() == world.getRegistryKey();
+        boolean isMet = opt.isEmpty() || opt.get().dimension() == world.getRegistryKey();
 
-        debug(villagerEntity, isMet, () -> "home is in " + opt.map(GlobalPos::getDimension).map(RegistryKey::getValue).orElse(null));
+        debug(villagerEntity, isMet, () -> "home is in " + opt.map(GlobalPos::dimension).map(RegistryKey::getValue).orElse(null));
 
         return isMet;
     }

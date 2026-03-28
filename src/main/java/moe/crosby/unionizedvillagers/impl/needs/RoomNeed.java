@@ -5,6 +5,7 @@ import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -28,7 +29,7 @@ public class RoomNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(World world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         double height = villagerEntity.getHeight();
         int bodyBlocks = MathHelper.ceil(height - 1);
         double headSize = MathHelper.clamp(height - bodyBlocks + ONE_VOXEL, 0, 1);
@@ -71,7 +72,7 @@ public class RoomNeed extends VillagerNeed {
             // count block & increase queue
             count++;
             for (int i = 0; i < 4; i++) {
-                Direction direction = Direction.fromHorizontal(i);
+                Direction direction = Direction.fromHorizontalQuarterTurns(i);
                 BlockPos offsetPos = footPos.offset(direction);
                 if (visited.add(offsetPos)) {
                     queue.add(offsetPos);
