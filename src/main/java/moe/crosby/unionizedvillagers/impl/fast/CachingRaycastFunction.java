@@ -9,6 +9,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -21,30 +22,22 @@ import java.util.function.BiFunction;
  * Heavily inspired by lithium @ LGPLv3 ty 2no2name ily <3
  * @author Crosby
  */
-public class CachingRaycastFunction implements BiFunction<RaycastContext, BlockPos, BlockHitResult> {
-    private final World world;
-    private final ShapeContext shapeContext;
+public sealed abstract class CachingRaycastFunction implements BiFunction<RaycastContext, BlockPos, BlockHitResult> {
+    private static final BlockHitResult MISS = BlockHitResult.createMissed(null, null, null);
+
+    protected final World world;
+    protected final ShapeContext shapeContext;
 
     private int chunkX = Integer.MIN_VALUE;
     private int chunkZ = Integer.MAX_VALUE;
     private Chunk chunk = null;
 
-    public CachingRaycastFunction(World world, RaycastContext raycastContext) {
+    private CachingRaycastFunction(World world, RaycastContext raycastContext) {
         this.world = world;
         this.shapeContext = ((RaycastContextAccessor) raycastContext).unionized$getShapeContext();
     }
 
-    /**
-     * Simplified to only include the specific parts used in {@link net.minecraft.entity.LivingEntity#canSee(Entity)}
-     */
-    @Override
-    public BlockHitResult apply(RaycastContext context, BlockPos blockPos) {
-        BlockState state = this.getBlock(blockPos);
-        VoxelShape shape = state.getCollisionShape(this.world, blockPos, this.shapeContext);
-        return shape.raycast(context.getStart(), context.getEnd(), blockPos);
-    }
-
-    private BlockState getBlock(BlockPos blockPos) {
+    protected BlockState getBlock(BlockPos blockPos) {
         int chunkX = ChunkSectionPos.getSectionCoord(blockPos.getX());
         int chunkZ = ChunkSectionPos.getSectionCoord(blockPos.getZ());
 
@@ -71,5 +64,54 @@ public class CachingRaycastFunction implements BiFunction<RaycastContext, BlockP
         }
 
         return Blocks.AIR.getDefaultState();
+    }
+
+
+    /**
+     * Simplified raycast function using {@link net.minecraft.world.RaycastContext.ShapeType#COLLIDER} and
+     * {@link net.minecraft.world.RaycastContext.FluidHandling#NONE}.
+     */
+    public static final class Collision extends CachingRaycastFunction {
+        private Collision(World world, RaycastContext raycastContext) {
+            super(world, raycastContext);
+        }
+
+        public static BlockHitResult raycast(World world, RaycastContext context) {
+            return BlockView.raycast(context.getStart(), context.getEnd(), context, new Collision(world, context), ctx -> MISS);
+        }
+
+        @Override
+        public BlockHitResult apply(RaycastContext context, BlockPos blockPos) {
+            BlockState state = this.getBlock(blockPos);
+            VoxelShape shape = state.getCollisionShape(this.world, blockPos, this.shapeContext);
+            return shape.raycast(context.getStart(), context.getEnd(), blockPos);
+        }
+    }
+
+    /**
+     * Simplified raycast function using {@link net.minecraft.world.RaycastContext.ShapeType#VISUAL} and
+     * {@link net.minecraft.world.RaycastContext.FluidHandling#ANY}.
+     */
+    public static final class Visual extends CachingRaycastFunction {
+        private Visual(World world, RaycastContext raycastContext) {
+            super(world, raycastContext);
+        }
+
+        public static BlockHitResult raycast(World world, RaycastContext context) {
+            return BlockView.raycast(context.getStart(), context.getEnd(), context, new Visual(world, context), ctx -> MISS);
+        }
+
+        @Override
+        public BlockHitResult apply(RaycastContext context, BlockPos blockPos) {
+            BlockState state = this.getBlock(blockPos);
+
+            BlockHitResult block = state.getCameraCollisionShape(this.world, blockPos, this.shapeContext)
+                .raycast(context.getStart(), context.getEnd(), blockPos);
+
+            BlockHitResult fluid = state.getFluidState().getShape(this.world, blockPos)
+                .raycast(context.getStart(), context.getEnd(), blockPos);
+
+            return block == null ? fluid : block;
+        }
     }
 }

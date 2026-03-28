@@ -2,6 +2,7 @@ package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
+import moe.crosby.unionizedvillagers.impl.fast.CachingRaycastFunction;
 import moe.crosby.unionizedvillagers.impl.fast.ChunkAwareBlockSweeper;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,14 +51,15 @@ public class NoHazardNearbyNeed extends VillagerNeed {
         Vec3d startPos = new Vec3d(villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ());
         Vec3d endPos = Vec3d.ofCenter(blockPos);
 
-        // todo replace with faster raycast
-        BlockHitResult result = villagerEntity.getEntityWorld().raycast(new RaycastContext(
+        RaycastContext context = new RaycastContext(
             startPos,
             endPos,
             RaycastContext.ShapeType.VISUAL,
             RaycastContext.FluidHandling.ANY,
             villagerEntity
-        ));
+        );
+
+        BlockHitResult result = CachingRaycastFunction.Visual.raycast(villagerEntity.getEntityWorld(), context);
 
         return result.getType() == HitResult.Type.MISS || result.getBlockPos().equals(blockPos);
     }
