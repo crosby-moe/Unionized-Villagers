@@ -31,6 +31,7 @@
         "fabricloader": "*",
         "fabric-api-base": "*",
         "fabric-resource-loader-v0": "*",
+        "server_translations_api": "*",
         "minecraft": "1.21.x"
     }
 }
