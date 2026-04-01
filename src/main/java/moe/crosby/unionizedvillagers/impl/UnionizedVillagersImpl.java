@@ -42,6 +42,7 @@ import net.minecraft.village.VillagerGossipType;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.World;
 import net.minecraft.world.rule.GameRuleCategory;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -184,38 +185,48 @@ public class UnionizedVillagersImpl implements ModInitializer {
         }
     }
 
-    public static void beginStrike(ServerWorld world, Vec3d center) {
+    public static boolean beginStrike(ServerWorld world, Vec3d center) {
         // sense villagers
         int searchDistance = Math.max(world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE), STRIKE_RANGE);
         BlockPos centerPos = BlockPos.ofFloored(center);
+
+        MutableBoolean success = new MutableBoolean(false);
 
         // start strike
         EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, centerPos, searchDistance, villager -> {
             villager.getBrain().remember(STRIKE_START_TIME, world.getTime());
             villager.getBrain().doExclusively(STRIKE);
 
-            return LazyIterationConsumer.NextIteration.CONTINUE;
-        });
-
-        // play sound effect
-        EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, centerPos, searchDistance + 16, player -> {
-            double distance = Math.sqrt(player.squaredDistanceTo(center));
-            double x = player.getX() + 13.0 / distance * (center.getX() - player.getX());
-            double z = player.getZ() + 13.0 / distance * (center.getZ() - player.getZ());
-
-            if (distance <= searchDistance + 16) {
-                player.networkHandler.sendPacket(new PlaySoundS2CPacket(
-                    SoundEvents.EVENT_RAID_HORN,
-                    SoundCategory.NEUTRAL,
-                    x, player.getY(), z,
-                    64f,
-                    1f,
-                    world.getRandom().nextLong()
-                ));
-            }
+            success.setTrue();
 
             return LazyIterationConsumer.NextIteration.CONTINUE;
         });
+
+        if (success.booleanValue()) {
+            // play sound effect
+            EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, centerPos, searchDistance + 16, player -> {
+                double distance = Math.sqrt(player.squaredDistanceTo(center));
+                double x = player.getX() + 13.0 / distance * (center.getX() - player.getX());
+                double z = player.getZ() + 13.0 / distance * (center.getZ() - player.getZ());
+
+                if (distance <= searchDistance + 16) {
+                    player.networkHandler.sendPacket(new PlaySoundS2CPacket(
+                        SoundEvents.EVENT_RAID_HORN,
+                        SoundCategory.NEUTRAL,
+                        x, player.getY(), z,
+                        64f,
+                        1f,
+                        world.getRandom().nextLong()
+                    ));
+                }
+
+                return LazyIterationConsumer.NextIteration.CONTINUE;
+            });
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static void endStrike(VillagerEntity villager) {

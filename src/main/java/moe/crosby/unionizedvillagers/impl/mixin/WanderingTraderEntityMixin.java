@@ -1,6 +1,7 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
 import moe.crosby.unionizedvillagers.api.StrikeTriggers;
+import moe.crosby.unionizedvillagers.impl.IServerPlayerEntity;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.EntityType;
@@ -27,18 +28,17 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
     @Inject(method = "afterUsing", at = @At("TAIL"))
     private void afterTradeComplete(TradeOffer offer, CallbackInfo ci) {
         if (getEntityWorld() instanceof ServerWorld world && this.getCustomer() instanceof ServerPlayerEntity player && EntitySensing.isVisible(player)) {
-            UnionizedVillagersImpl.beginStrike(world, this.getEntityPos());
+            ((IServerPlayerEntity) player).unionized$getWarningManager().increaseWarningLevel(4);
 
-            // notify players
-            EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, this.getBlockPos(), UnionizedVillagersImpl.STRIKE_RANGE, somePlayer -> {
-                // %1$s -> victim
-                // %2$s -> witness
-                // %3$s -> criminal
-                Text feeedback = Text.translatable(StrikeTriggers.ILLEGAL_TRADING.translationKey(), null, null, player.getDisplayName());
-                somePlayer.sendMessage(Text.empty().formatted(Formatting.YELLOW).append(feeedback));
+            if (UnionizedVillagersImpl.beginStrike(world, this.getEntityPos())) {
+                // notify players
+                EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, this.getBlockPos(), UnionizedVillagersImpl.STRIKE_RANGE, somePlayer -> {
+                    Text feeedback = Text.translatable(StrikeTriggers.ILLEGAL_TRADING.translationKey(), player.getDisplayName());
+                    somePlayer.sendMessage(Text.empty().formatted(Formatting.YELLOW).append(feeedback));
 
-                return LazyIterationConsumer.NextIteration.CONTINUE;
-            });
+                    return LazyIterationConsumer.NextIteration.CONTINUE;
+                });
+            }
         }
     }
 }
