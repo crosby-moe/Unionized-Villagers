@@ -154,7 +154,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
 
     @Override
     public boolean unionized$heardMonsterNoise() {
-        return this.lastHeardMonsterNoise + 500 < this.age;
+        return this.lastHeardMonsterNoise < this.age - 500;
     }
 
     // Handle trade serialization
