@@ -28,7 +28,7 @@ public interface LootableInventoryMixin {
 
     @Inject(method = "generateLoot", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/LootableInventory;getLootTable()Lnet/minecraft/registry/RegistryKey;"))
     private void checkLootIn(PlayerEntity player, CallbackInfo ci) {
-        if (this.getWorld() instanceof ServerWorld serverWorld && (Object) this instanceof ChestBlockEntity blockEntity && this.getLootTable().getValue().getPath().startsWith("chests/village/")
+        if (this.getWorld() instanceof ServerWorld serverWorld && (Object) this instanceof ChestBlockEntity blockEntity && this.getLootTable() != null && this.getLootTable().getValue().getPath().startsWith("chests/village/")
             && player instanceof ServerPlayerEntity serverPlayer && EntitySensing.isVisible(player)) {
             int searchDistance = serverWorld.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
             EntitySensing.forEach(serverWorld, EntitySensing.VILLAGER_FILTER, blockEntity.getPos(), searchDistance, villager -> {
