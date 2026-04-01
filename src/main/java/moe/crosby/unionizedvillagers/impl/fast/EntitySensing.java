@@ -3,6 +3,7 @@ package moe.crosby.unionizedvillagers.impl.fast;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import moe.crosby.unionizedvillagers.impl.mixin.WorldInvoker;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,6 +22,7 @@ import java.util.function.Predicate;
 public class EntitySensing {
     public static final TypeFilter<Entity, VillagerEntity> VILLAGER_FILTER = TypeFilter.instanceOf(VillagerEntity.class);
     public static final TypeFilter<Entity, ServerPlayerEntity> PLAYER_FILTER = TypeFilter.instanceOf(ServerPlayerEntity.class);
+    public static final TypeFilter<Entity, HostileEntity> HOSTILE_FILTER = TypeFilter.instanceOf(HostileEntity.class);
 
     public static boolean isVisible(PlayerEntity player) {
         return !player.isSpectator() && !player.isInvisible() && !player.isCreative() && player.isAlive();

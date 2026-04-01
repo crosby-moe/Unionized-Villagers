@@ -3,16 +3,14 @@ package moe.crosby.unionizedvillagers.impl.needs;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
+import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.Difficulty;
-
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Villager need that ensures a villager does not have a visible monster near
@@ -35,17 +33,17 @@ public class NoMonsterNeed extends VillagerNeed {
         }
 
         int searchRadius = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
-        Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
+        boolean seeThroughWalls = world.getGameRules().getValue(UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS);
 
-        List<HostileEntity> monsters = world.getEntitiesByType(TypeFilter.instanceOf(HostileEntity.class), searchBox, monster -> canSee(villagerEntity, monster));
-        boolean isMet = monsters.isEmpty();
+        @Nullable HostileEntity seenMonster = EntitySensing.getFirst(
+            world, EntitySensing.HOSTILE_FILTER, villagerEntity.getBlockPos(), searchRadius,
+            monster -> EntitySensing.isVisible(monster) && (seeThroughWalls || villagerEntity.getVisibilityCache().canSee(monster))
+        );
 
-        debug(villagerEntity, isMet, () -> "monster is at " + (monsters.isEmpty() ? null : monsters.getFirst().getBlockPos()));
+        boolean isMet = seenMonster == null;
+
+        debug(villagerEntity, isMet, () -> "monster is at " + (seenMonster == null ? null : seenMonster.getBlockPos()));
 
         return isMet;
-    }
-
-    private boolean canSee(VillagerEntity villagerEntity, HostileEntity hostileEntity) {
-        return hostileEntity.isAlive() && !hostileEntity.isInvisible() && villagerEntity.getVisibilityCache().canSee(hostileEntity);
     }
 }
