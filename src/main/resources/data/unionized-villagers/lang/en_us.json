@@ -27,7 +27,7 @@
     "unionized-villagers.trigger.killing_guardian": "A Village has lost their %1$s! The Villagers demand compensation!",
     "unionized-villagers.trigger.kidnapping": "A Villager is being kidnapped! The Villagers respond by refusing to serve you!",
     "unionized-villagers.trigger.zombified": "A Villager has been killed! The Villagers have gone on strike in protest!",
-    "unionized-villagers.trigger.illegal_trading": "The %2$s has caught %3&s trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!",
+    "unionized-villagers.trigger.illegal_trading": "%3&s was caught trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!",
 
     "unionized-villagers.text.end_strike": "End Strike!",
     "unionized-villagers.text.common_striking_1": "We are not your farms!",

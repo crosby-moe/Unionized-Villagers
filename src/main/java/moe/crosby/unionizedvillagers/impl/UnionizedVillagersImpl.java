@@ -35,6 +35,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.LazyIterationConsumer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerGossipType;
 import net.minecraft.village.VillagerProfession;
@@ -45,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class UnionizedVillagersImpl implements ModInitializer {
+    public static final int STRIKE_RANGE = 320;
     public static final String MODID = "unionized-villagers";
     public static Activity STRIKE;
     public static MemoryModuleType<Long> STRIKE_START_TIME;
@@ -177,16 +180,17 @@ public class UnionizedVillagersImpl implements ModInitializer {
         }
 
         if (causesStrike) {
-            beginStrike(world, witness);
+            beginStrike(world, witness.getEntityPos());
         }
     }
 
-    private static void beginStrike(ServerWorld world, VillagerEntity leader) {
+    public static void beginStrike(ServerWorld world, Vec3d center) {
         // sense villagers
-        int searchDistance = Math.max(world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE), 48);
+        int searchDistance = Math.max(world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE), STRIKE_RANGE);
+        BlockPos centerPos = BlockPos.ofFloored(center);
 
         // start strike
-        EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, leader.getBlockPos(), searchDistance, villager -> {
+        EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, centerPos, searchDistance, villager -> {
             villager.getBrain().remember(STRIKE_START_TIME, world.getTime());
             villager.getBrain().doExclusively(STRIKE);
 
@@ -194,10 +198,10 @@ public class UnionizedVillagersImpl implements ModInitializer {
         });
 
         // play sound effect
-        EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, leader.getBlockPos(), searchDistance + 16, player -> {
-            double distance = player.distanceTo(leader);
-            double x = player.getX() + 13.0 / distance * (leader.getX() - player.getX());
-            double z = player.getZ() + 13.0 / distance * (leader.getZ() - player.getZ());
+        EntitySensing.forEach(world, EntitySensing.PLAYER_FILTER, centerPos, searchDistance + 16, player -> {
+            double distance = Math.sqrt(player.squaredDistanceTo(center));
+            double x = player.getX() + 13.0 / distance * (center.getX() - player.getX());
+            double z = player.getZ() + 13.0 / distance * (center.getZ() - player.getZ());
 
             if (distance <= searchDistance + 16) {
                 player.networkHandler.sendPacket(new PlaySoundS2CPacket(
