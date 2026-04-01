@@ -197,6 +197,8 @@ public class UnionizedVillagersImpl implements ModInitializer {
             villager.getBrain().remember(STRIKE_START_TIME, world.getTime());
             villager.getBrain().doExclusively(STRIKE);
 
+            ((VillagerEntityInvoker) villager).unionized$sayNo();
+
             success.setTrue();
 
             return LazyIterationConsumer.NextIteration.CONTINUE;

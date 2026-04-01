@@ -1,11 +1,14 @@
 package moe.crosby.unionizedvillagers.impl.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.world.World;
@@ -30,5 +33,25 @@ public abstract class MobEntityMixin extends LivingEntity {
                 return LazyIterationConsumer.NextIteration.CONTINUE;
             });
         }
+    }
+
+    @WrapOperation(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;playAmbientSound()V"))
+    private void wrapAmbientSounds(MobEntity instance, Operation<Void> original) {
+        if (this.getEntityWorld() instanceof ServerWorld serverWorld) {
+            // villagers hearing monsters
+            if (instance instanceof HostileEntity) {
+                EntitySensing.forEach(serverWorld, EntitySensing.VILLAGER_FILTER, this.getBlockPos(), 16, villager -> {
+                    ((IVillagerEntity) villager).unionized$triggerMonsterNoise();
+
+                    return LazyIterationConsumer.NextIteration.CONTINUE;
+                });
+                // replace villager ambient noise with a sayNo() when striking
+            } else if (instance instanceof VillagerEntity villager && ((IVillagerEntity) villager).unionized$isInStrike() && !villager.isSleeping()) {
+                ((VillagerEntityInvoker) villager).unionized$sayNo();
+                return;
+            }
+        }
+
+        original.call(instance);
     }
 }
