@@ -10,6 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.Difficulty;
 
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class NoMonsterNeed extends VillagerNeed {
 
     @Override
     public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+        if (world.getDifficulty() == Difficulty.PEACEFUL) {
+            debug(villagerEntity, true, () -> "world is peaceful");
+            return true;
+        }
+
         if (((IVillagerEntity) villagerEntity).unionized$heardMonsterNoise()) {
             debug(villagerEntity, false, () -> "heard monster");
             return false;
