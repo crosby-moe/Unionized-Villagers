@@ -60,6 +60,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
         UnionizedVillagers.DEBUG = GameRuleBuilder.forBoolean(false).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("debug_unionized_villagers"));
         UnionizedVillagers.VIEW_RANGE = GameRuleBuilder.forInteger(32).range(1, 128).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("villager_view_range"));
         UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS = GameRuleBuilder.forBoolean(false).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("villager_see_monsters_through_walls"));
+        UnionizedVillagers.ROOM_SIZE = GameRuleBuilder.forInteger(9).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("villager_room_minimum_size"));
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, attacker, victim, source) -> {
             if (attacker instanceof ServerPlayerEntity player && !player.isInvisible() && !victim.isInvisible()) {

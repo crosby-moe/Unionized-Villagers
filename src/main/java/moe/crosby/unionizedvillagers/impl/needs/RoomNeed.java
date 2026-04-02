@@ -1,6 +1,7 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -22,7 +23,6 @@ import java.util.Set;
 public class RoomNeed extends VillagerNeed {
     private static final double ONE_VOXEL = 1 / 16d;
     private static final double EPSILON = 1e-5f;
-    private static final int AREA = 3 * 3;
 
     public RoomNeed(Identifier identifier, int priority) {
         super(identifier, priority);
@@ -30,6 +30,8 @@ public class RoomNeed extends VillagerNeed {
 
     @Override
     public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+        int requiredSize = world.getGameRules().getValue(UnionizedVillagers.ROOM_SIZE);
+
         double height = villagerEntity.getHeight();
         int bodyBlocks = MathHelper.ceil(height - 1);
         double headSize = MathHelper.clamp(height - bodyBlocks + ONE_VOXEL, 0, 1);
@@ -43,7 +45,7 @@ public class RoomNeed extends VillagerNeed {
         visited.add(villagerEntity.getBlockPos());
         int count = 0;
 
-        while (!queue.isEmpty() && count < AREA) {
+        while (!queue.isEmpty() && count < requiredSize) {
             BlockPos footPos = queue.poll();
 
             double footHeight = footHeight(world, shapeContext, footPos);
@@ -80,10 +82,10 @@ public class RoomNeed extends VillagerNeed {
             }
         }
 
-        boolean isMet = count >= AREA;
+        boolean isMet = count >= requiredSize;
 
         int finalCount = count;
-        debug(villagerEntity, isMet, () -> "has " + finalCount + " blocks of free space out of " + AREA + " required");
+        debug(villagerEntity, isMet, () -> "has " + finalCount + " blocks of free space out of " + requiredSize + " required");
 
         return isMet;
     }

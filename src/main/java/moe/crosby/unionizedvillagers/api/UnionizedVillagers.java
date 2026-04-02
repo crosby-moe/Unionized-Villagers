@@ -19,6 +19,7 @@ public class UnionizedVillagers {
     public static GameRule<Boolean> DEBUG;
     public static GameRule<Integer> VIEW_RANGE;
     public static GameRule<Boolean> SEE_MONSTERS_THROUGH_WALLS;
+    public static GameRule<Integer> ROOM_SIZE;
 
     public static final TagKey<EntityType<?>> GUARDIANS_ENTITY_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id("guardians"));
     public static final TagKey<StatusEffect> POISONS_TAG = TagKey.of(RegistryKeys.STATUS_EFFECT, UnionizedVillagersImpl.id("poisons"));
