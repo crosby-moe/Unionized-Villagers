@@ -3,6 +3,8 @@ package moe.crosby.unionizedvillagers.impl.needs;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,8 +12,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -22,7 +22,6 @@ import java.util.Set;
  */
 public class RoomNeed extends VillagerNeed {
     private static final double ONE_VOXEL = 1 / 16d;
-    private static final double EPSILON = 1e-5f;
 
     public RoomNeed(Identifier identifier, int priority) {
         super(identifier, priority);
@@ -32,12 +31,6 @@ public class RoomNeed extends VillagerNeed {
     public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
         int requiredSize = world.getGameRules().getValue(UnionizedVillagers.ROOM_SIZE);
 
-        double height = villagerEntity.getHeight();
-        int bodyBlocks = MathHelper.ceil(height - 1);
-        double headSize = MathHelper.clamp(height - bodyBlocks + ONE_VOXEL, 0, 1);
-        double jumpHeight = 1.2d;
-        double walkHeight = 0.5d;
-
         ShapeContext shapeContext = ShapeContext.of(villagerEntity);
         Set<BlockPos> visited = new ObjectOpenHashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();
@@ -46,38 +39,28 @@ public class RoomNeed extends VillagerNeed {
         int count = 0;
 
         while (!queue.isEmpty() && count < requiredSize) {
-            BlockPos footPos = queue.poll();
+            BlockPos pos = queue.poll();
+            BlockState state = world.getBlockState(pos);
+            BlockState up = world.getBlockState(pos.up());
 
-            double footHeight = footHeight(world, shapeContext, footPos);
-
-            if (count > 0) {
-                // attempt to move down
-                if (footHeight < EPSILON && headHeight(world, shapeContext, footPos.up()) > headSize) {
-                    BlockPos newFootPos = footPos.down();
-                    if (footHeight(world, shapeContext, newFootPos) < 1) {
-                        footPos = newFootPos;
-                    }
-                // attempt to move up
-                } else if (footHeight > walkHeight && footHeight < jumpHeight && headHeight(world, shapeContext, footPos.up(2)) > headSize) {
-                    BlockPos newFootPos = footPos.up();
-                    if (footHeight(world, shapeContext, newFootPos) < jumpHeight - 1) {
-                        footPos = newFootPos;
-                    }
-                }
-            }
-
-            // check if the whole body fits
-            if (!canBodyFit(world, footPos, bodyBlocks, shapeContext)) {
+            // needs a floor
+            if (world.getBlockState(pos.down()).getCollisionShape(world, pos, shapeContext).getMax(Direction.Axis.Y) < 1) {
                 continue;
             }
 
-            // count block & increase queue
-            count++;
-            for (int i = 0; i < 4; i++) {
-                Direction direction = Direction.fromHorizontalQuarterTurns(i);
-                BlockPos offsetPos = footPos.offset(direction);
-                if (visited.add(offsetPos)) {
-                    queue.add(offsetPos);
+            // door
+            if ((isOpenableDoor(state) && isOpenableDoor(up))
+                // can fit in
+            || (state.getCollisionShape(world, pos, shapeContext).getMax(Direction.Axis.Y) <= ONE_VOXEL && up.getCollisionShape(world, pos.up(), shapeContext).isEmpty())) {
+
+                // count block & increase queue
+                count++;
+                for (int i = 0; i < 4; i++) {
+                    Direction direction = Direction.fromHorizontalQuarterTurns(i);
+                    BlockPos offsetPos = pos.offset(direction);
+                    if (visited.add(offsetPos)) {
+                        queue.add(offsetPos);
+                    }
                 }
             }
         }
@@ -90,23 +73,7 @@ public class RoomNeed extends VillagerNeed {
         return isMet;
     }
 
-    private static double footHeight(World world, ShapeContext shapeContext, BlockPos pos) {
-        return world.getBlockState(pos).getCollisionShape(world, pos, shapeContext).getMax(Direction.Axis.Y);
-    }
-
-    private static double headHeight(World world, ShapeContext shapeContext, BlockPos pos) {
-        return world.getBlockState(pos).getCollisionShape(world, pos, shapeContext).getMin(Direction.Axis.Y);
-    }
-
-    private static boolean canBodyFit(World world, BlockPos footPos, int body, ShapeContext shapeContext) {
-        BlockPos headPos = footPos;
-        for (int i = 0; i < body; i++) {
-            headPos = headPos.up();
-            if (!world.getBlockState(headPos).getCollisionShape(world, headPos, shapeContext).isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
+    private static boolean isOpenableDoor(BlockState state) {
+        return state.getBlock() instanceof DoorBlock door && door.getBlockSetType().canOpenByHand();
     }
 }
