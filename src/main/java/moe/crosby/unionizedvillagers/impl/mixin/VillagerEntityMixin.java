@@ -173,6 +173,16 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         }
     }
 
+    /**
+     * Allow trading with unjobbed villagers to end a strike
+     */
+    @WrapOperation(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;resetCustomer()V"))
+    private void dontResetIfInStrike(VillagerEntity instance, Operation<Void> original) {
+        if (!this.unionized$isInStrike()) {
+            original.call(instance);
+        }
+    }
+
     // Handle trade serialization
 
     @Unique
