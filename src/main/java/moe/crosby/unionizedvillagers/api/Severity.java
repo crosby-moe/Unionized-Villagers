@@ -6,8 +6,8 @@ public enum Severity {
     MINOR(1, VillagerGossipType.MINOR_NEGATIVE),
     MAJOR(3, VillagerGossipType.MAJOR_NEGATIVE);
 
-    public int warningLevel;
-    public VillagerGossipType gossipType;
+    public final int warningLevel;
+    public final VillagerGossipType gossipType;
 
     Severity(int warningLevel, VillagerGossipType gossipType) {
         this.warningLevel = warningLevel;

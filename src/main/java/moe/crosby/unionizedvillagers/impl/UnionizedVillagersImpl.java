@@ -38,7 +38,6 @@ import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.VillagerData;
-import net.minecraft.village.VillagerGossipType;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.World;
 import net.minecraft.world.rule.GameRuleCategory;
