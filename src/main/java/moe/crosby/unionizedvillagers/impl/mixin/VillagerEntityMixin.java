@@ -3,6 +3,8 @@ package moe.crosby.unionizedvillagers.impl.mixin;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.datafixers.util.Pair;
 import moe.crosby.unionizedvillagers.api.*;
 import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
@@ -30,6 +32,8 @@ import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
+import net.minecraft.village.VillagerGossipType;
+import net.minecraft.village.VillagerGossips;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +46,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.UUID;
 
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin extends MerchantEntity implements IVillagerEntity {
@@ -155,6 +160,17 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
     @Override
     public boolean unionized$heardMonsterNoise() {
         return this.lastHeardMonsterNoise < this.age - 500;
+    }
+
+    /**
+     * Since strike triggers already give negative gossips, not removing these would make golems prematurely attack
+     * players before a strike can begin.
+     */
+    @WrapOperation(method = "onInteractionWith", at = @At(value = "INVOKE", target = "Lnet/minecraft/village/VillagerGossips;startGossip(Ljava/util/UUID;Lnet/minecraft/village/VillagerGossipType;I)V"))
+    private void removeVanillaNegativeGossip(VillagerGossips instance, UUID target, VillagerGossipType type, int value, Operation<Void> original) {
+        if (type != VillagerGossipType.MINOR_NEGATIVE && type != VillagerGossipType.MAJOR_NEGATIVE) {
+            original.call(instance, target, type, value);
+        }
     }
 
     // Handle trade serialization

@@ -171,12 +171,14 @@ public class UnionizedVillagersImpl implements ModInitializer {
                 if (victim instanceof VillagerEntity villager) {
                     world.sendEntityStatus(villager, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
                     ((VillagerEntityInvoker) villager).unionized$sayNo();
-                    villager.getGossip().startGossip(criminal.getUuid(), VillagerGossipType.MINOR_NEGATIVE, 25);
+                    villager.getGossip().startGossip(criminal.getUuid(), trigger.severity().gossipType, 25);
                 }
 
-                world.sendEntityStatus(witness, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
-                ((VillagerEntityInvoker) witness).unionized$sayNo();
-                witness.getGossip().startGossip(criminal.getUuid(), VillagerGossipType.MINOR_NEGATIVE, 25);
+                if (witness != victim) {
+                    world.sendEntityStatus(witness, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
+                    ((VillagerEntityInvoker) witness).unionized$sayNo();
+                    witness.getGossip().startGossip(criminal.getUuid(), trigger.severity().gossipType, 25);
+                }
 
                 causesStrike |= strikeWarningManager.getWarningLevel() >= 3;
             }
