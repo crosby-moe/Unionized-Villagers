@@ -10,6 +10,7 @@
         "LootableInventoryMixin",
         "MemoryModuleTypeMixin",
         "MerchantEntityMixin",
+        "MerchantMixin",
         "MobEntityMixin",
         "RaycastContextAccessor",
         "ServerPlayerEntityMixin",

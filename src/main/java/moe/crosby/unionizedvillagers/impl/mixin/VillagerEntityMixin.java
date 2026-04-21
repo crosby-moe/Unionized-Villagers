@@ -11,9 +11,6 @@ import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTaskList;
 import moe.crosby.unionizedvillagers.impl.ai.StrikeTradeOffers;
-import moe.crosby.unionizedvillagers.impl.ai.StrikingTexts;
-import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -21,10 +18,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.screen.MerchantScreenHandler;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.storage.ReadView;
@@ -44,8 +37,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-import java.util.OptionalInt;
 import java.util.UUID;
 
 @Mixin(VillagerEntity.class)
@@ -117,23 +108,6 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         } else {
             return false;
         }
-    }
-
-
-
-    @Override
-    public boolean startRiding(Entity entity, boolean force, boolean emitEvent) {
-        if (!force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && this.getEntityWorld() instanceof ServerWorld world) {
-            // sense villagers
-            int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
-
-            List<ServerPlayerEntity> players = EntitySensing.getEntities(world, EntitySensing.PLAYER_FILTER, entity.getBlockPos(), searchDistance, player -> EntitySensing.isVisible(player) && this.getVisibilityCache().canSee(player));
-
-            VillagerEntity villager = (VillagerEntity) (Object) this;
-            UnionizedVillagers.emitTriggers(world, players, villager, villager, StrikeTriggers.KIDNAPPING);
-        }
-
-        return super.startRiding(entity, force, emitEvent);
     }
 
     @ModifyExpressionValue(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableList;of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)Lcom/google/common/collect/ImmutableList;"))
@@ -213,8 +187,8 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         return this.getBrain().hasActivity(UnionizedVillagersImpl.STRIKE) && this.getBrain().getOptionalRegisteredMemory(UnionizedVillagersImpl.STRIKE_START_TIME).isPresent();
     }
 
-    @Unique
-    private TradeOfferList getStrikeOffers() {
+    @Override
+    public TradeOfferList unionized$getStrikeOffers() {
         if (this.savedStrikeTrades != null) {
             return this.savedStrikeTrades;
         }
@@ -224,34 +198,5 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
             this.fillRecipesFromPool(serverWorld, tradeOffers, StrikeTradeOffers.OFFERS, 1);
         }
         return this.savedStrikeTrades = tradeOffers;
-    }
-
-    @Override
-    public TradeOfferList getOffers() {
-        if (this.unionized$isInStrike()) {
-            return this.getStrikeOffers();
-        } else {
-            return super.getOffers();
-        }
-    }
-
-    @Override
-    public void sendOffers(PlayerEntity player, Text test, int levelProgress) {
-        if (this.unionized$isInStrike()) {
-            // copies super
-            OptionalInt optionalInt = player.openHandledScreen(
-                new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new MerchantScreenHandler(syncId, playerInventory, this), test)
-            );
-            if (optionalInt.isPresent()) {
-                TradeOfferList tradeOfferList = this.getStrikeOffers();
-                if (!tradeOfferList.isEmpty()) {
-                    player.sendTradeOffers(optionalInt.getAsInt(), tradeOfferList, levelProgress, this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
-                }
-            }
-
-            player.sendMessage(UnionizedVillagersImpl.of(this).append(Text.translatable(StrikingTexts.get(this.getRandom()))), false);
-        } else {
-            super.sendOffers(player, test, levelProgress);
-        }
     }
 }
