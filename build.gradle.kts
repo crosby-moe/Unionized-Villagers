@@ -24,7 +24,7 @@ dependencies {
     modImplementation(include(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-events-interaction-v0", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-resource-loader-v0", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-convention-tags-v1", project.properties["fabric_version"] as String))!!)
+    modImplementation(include(fabricApi.module("fabric-convention-tags-v2", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-command-api-v2", project.properties["fabric_version"] as String))!!)
     modImplementation(include(fabricApi.module("fabric-registry-sync-v0", project.properties["fabric_version"] as String))!!)
     modImplementation(include("xyz.nucleoid:server-translations-api:2.5.2+1.21.9-pre3") {

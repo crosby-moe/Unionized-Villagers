@@ -1,6 +1,6 @@
 {
     "replace": false,
     "values": [
-        "#c:wooden_barrels"
+        "#c:barrels/wooden"
     ]
 }
