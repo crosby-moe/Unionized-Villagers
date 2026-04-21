@@ -1,0 +1,34 @@
+{
+    "tag.block.c.cartography_tables": "Cartography Tables",
+    "tag.block.c.chiseled_bookshelves": "Chiseled Bookshelves",
+    "tag.block.c.composters": "Composters",
+    "tag.block.c.fletching_tables": "Fletching Tables",
+    "tag.block.c.grindstones": "Grindstones",
+    "tag.block.c.lecterns": "Lecterns",
+    "tag.block.c.looms": "Looms",
+    "tag.block.c.smithing_tables": "Smithing Tables",
+    "tag.block.c.smokers": "Smokers",
+
+    "tag.block.unionized-villagers.armorer_possessions": "Armorer Possessions",
+    "tag.block.unionized-villagers.butcher_possessions": "Butcher Possessions",
+    "tag.block.unionized-villagers.cartographer_possessions": "Cartographer Possessions",
+    "tag.block.unionized-villagers.cleric_possessions": "Cleric Possessions",
+    "tag.block.unionized-villagers.farmer_possessions": "Farmer Possessions",
+    "tag.block.unionized-villagers.fisherman_possessions": "Fisherman Possessions",
+    "tag.block.unionized-villagers.fletcher_possessions": "Fletcher Possessions",
+    "tag.block.unionized-villagers.leatherworker_possessions": "Leatherworker Possessions",
+    "tag.block.unionized-villagers.librarian_possessions": "Librarian Possessions",
+    "tag.block.unionized-villagers.mason_possessions": "Mason Possessions",
+    "tag.block.unionized-villagers.shepherd_possessions": "Shepherd Possessions",
+    "tag.block.unionized-villagers.toolsmith_possessions": "Toolsmith Possessions",
+    "tag.block.unionized-villagers.weaponsmith_possessions": "Weaponsmith Possessions",
+    "tag.block.unionized-villagers.hazards": "Hazards",
+
+    "tag.entity_type.unionized-villagers.butcher_possessions": "Butcher Possessions",
+    "tag.entity_type.unionized-villagers.fletcher_possessions": "Fletcher Possessions",
+    "tag.entity_type.unionized-villagers.leatherworker_possessions": "Leatherworker Possessions",
+    "tag.entity_type.unionized-villagers.shepherd_possessions": "Shepherd Possessions",
+    "tag.entity_type.unionized-villagers.guardians": "Guardians",
+
+    "tag.mob_effect.unionized-villagers.poisons": "Poisons"
+}
