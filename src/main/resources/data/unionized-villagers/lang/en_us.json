@@ -30,6 +30,7 @@
     "unionized-villagers.trigger.illegal_trading": "%s was caught trading with a non-union trader! The Villagers refuse to work until this misdeed is compensated!",
 
     "unionized-villagers.text.end_strike": "End Strike!",
+    "unionized-villagers.text.strike_ended": "Glad we could reach an understanding.",
     "unionized-villagers.text.common_striking_1": "We are not your farms!",
     "unionized-villagers.text.common_striking_2": "No Nose! No Service!",
     "unionized-villagers.text.common_striking_3": "Our Village, not yours!",

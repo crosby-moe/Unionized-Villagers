@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.TradeOutputSlot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.village.Merchant;
 import net.minecraft.village.MerchantInventory;
@@ -34,7 +35,7 @@ public class TradeOutputSlotMixin {
             ItemStack itemStack = this.merchantInventory.getStack(0);
             ItemStack itemStack2 = this.merchantInventory.getStack(1);
 
-            if (this.merchant instanceof VillagerEntity villager && villager.getEntityWorld() instanceof ServerWorld world &&player instanceof ServerPlayerEntity serverPlayer && ((IVillagerEntity) villager).unionized$isInStrike() && StrikeTradeOffers.isEndStrikeStack(stack) && (tradeOffer.depleteBuyItems(itemStack, itemStack2) || tradeOffer.depleteBuyItems(itemStack2, itemStack))) {
+            if (this.merchant instanceof VillagerEntity villager && villager.getEntityWorld() instanceof ServerWorld world && player instanceof ServerPlayerEntity serverPlayer && ((IVillagerEntity) villager).unionized$isInStrike() && StrikeTradeOffers.isEndStrikeStack(stack) && (tradeOffer.depleteBuyItems(itemStack, itemStack2) || tradeOffer.depleteBuyItems(itemStack2, itemStack))) {
                 // disable striking state
                 int searchDistance = Math.max(world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE), 48) + 16;
                 EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, villager.getBlockPos(), searchDistance, innerVillager -> {
@@ -44,6 +45,7 @@ public class TradeOutputSlotMixin {
 
                 // cancel the trade
                 ci.cancel();
+                stack.setCount(0);
 
                 // manually decrement inputs
                 this.merchantInventory.setStack(0, itemStack);
@@ -51,6 +53,9 @@ public class TradeOutputSlotMixin {
 
                 // close screen
                 serverPlayer.closeHandledScreen();
+
+                // send message
+                serverPlayer.sendMessage(UnionizedVillagersImpl.of(villager).append(Text.translatable("unionized-villagers.text.strike_ended")));
             }
         }
     }
