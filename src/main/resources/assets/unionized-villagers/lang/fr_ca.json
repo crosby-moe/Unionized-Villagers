@@ -1,0 +1,34 @@
+{
+    "tag.block.c.cartography_tables": "Tables de Cartographie",
+    "tag.block.c.chiseled_bookshelves": "Bibliothèques Sculptées",
+    "tag.block.c.composters": "Composteurs",
+    "tag.block.c.fletching_tables": "Tables d'Archerie",
+    "tag.block.c.grindstones": "Meules",
+    "tag.block.c.lecterns": "Lutrins",
+    "tag.block.c.looms": "Métiers à Tisser",
+    "tag.block.c.smithing_tables": "Tables de Forge",
+    "tag.block.c.smokers": "Fumoirs",
+
+    "tag.block.unionized-villagers.armorer_possessions": "Possessions de l'Armurier",
+    "tag.block.unionized-villagers.butcher_possessions": "Possessions du Boucher",
+    "tag.block.unionized-villagers.cartographer_possessions": "Possessions du Cartographe",
+    "tag.block.unionized-villagers.cleric_possessions": "Possessions du Clerc",
+    "tag.block.unionized-villagers.farmer_possessions": "Possessions du Fermier",
+    "tag.block.unionized-villagers.fisherman_possessions": "Possessions du Pêcheur",
+    "tag.block.unionized-villagers.fletcher_possessions": "Possessions du Fléchier",
+    "tag.block.unionized-villagers.leatherworker_possessions": "Possessions du Tanneur",
+    "tag.block.unionized-villagers.librarian_possessions": "Possessions du Bibliothécaire",
+    "tag.block.unionized-villagers.mason_possessions": "Possessions du Maçon",
+    "tag.block.unionized-villagers.shepherd_possessions": "Possessions du Berger",
+    "tag.block.unionized-villagers.toolsmith_possessions": "Possessions du Forgeur d'Outils",
+    "tag.block.unionized-villagers.weaponsmith_possessions": "Possessions du Forgeur d'Armes",
+    "tag.block.unionized-villagers.hazards": "Dangers",
+
+    "tag.entity_type.unionized-villagers.butcher_possessions": "Possessions du Boucher",
+    "tag.entity_type.unionized-villagers.fletcher_possessions": "Possessions du Fléchier",
+    "tag.entity_type.unionized-villagers.leatherworker_possessions": "Possessions du Tanneur",
+    "tag.entity_type.unionized-villagers.shepherd_possessions": "Possessions du Berger",
+    "tag.entity_type.unionized-villagers.guardians": "Gardiens",
+
+    "tag.mob_effect.unionized-villagers.poisons": "Poisons"
+}
