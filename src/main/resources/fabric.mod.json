@@ -13,6 +13,7 @@
         }
     ],
     "contact": {
+        "homepage": "https://modrinth.com/mod/unionized-villagers",
         "sources": "https://github.com/crosby-moe/Unionized-Villagers",
         "issues": "https://github.com/crosby-moe/Unionized-Villagers/issues"
     },
@@ -29,8 +30,7 @@
     ],
     "depends": {
         "fabricloader": "*",
-        "fabric-api-base": "*",
-        "fabric-resource-loader-v0": "*",
+        "fabric-api": "*",
         "server_translations_api": "*",
         "minecraft": "1.21.x"
     }
