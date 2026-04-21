@@ -3,6 +3,7 @@ plugins {
 }
 
 base {
+    archivesName = properties["archives_base_name"] as String
     version = properties["mod_version"] as String
     group = properties["maven_group"] as String
 }
@@ -19,14 +20,12 @@ dependencies {
     mappings("net.fabricmc:yarn:${project.properties["yarn_mappings"] as String}:v2")
     modImplementation("net.fabricmc:fabric-loader:${project.properties["loader_version"] as String}")
 
-    modImplementation(include(fabricApi.module("fabric-api-base", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-game-rule-api-v1", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-events-interaction-v0", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-resource-loader-v0", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-convention-tags-v2", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-command-api-v2", project.properties["fabric_version"] as String))!!)
-    modImplementation(include(fabricApi.module("fabric-registry-sync-v0", project.properties["fabric_version"] as String))!!)
+    modCompileOnly(fabricApi.module("fabric-game-rule-api-v1", project.properties["fabric_version"] as String))
+    modCompileOnly(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))
+    modCompileOnly(fabricApi.module("fabric-events-interaction-v0", project.properties["fabric_version"] as String))
+    modCompileOnly(fabricApi.module("fabric-command-api-v2", project.properties["fabric_version"] as String))
+    modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"] as String}")
+
     modImplementation(include("xyz.nucleoid:server-translations-api:2.5.2+1.21.9-pre3") {
         exclude("net.fabricmc.fabric-api", "fabric-api")
     })
@@ -58,7 +57,7 @@ tasks {
         }
     }
 
-    withType<JavaCompile> {
+    withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
     }
 }
