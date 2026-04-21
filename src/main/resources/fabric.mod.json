@@ -14,8 +14,8 @@
     ],
     "contact": {
         "homepage": "https://modrinth.com/mod/unionized-villagers",
-        "sources": "https://github.com/crosby-moe/Unionized-Villagers",
-        "issues": "https://github.com/crosby-moe/Unionized-Villagers/issues"
+        "sources": "https://github.com/crosby-moe/unionized-villagers",
+        "issues": "https://github.com/crosby-moe/unionized-villagers/issues"
     },
     "license": "MIT",
     "icon": "assets/unionized-villagers/icon.png",
