@@ -29,7 +29,7 @@ public class RoomNeed extends VillagerNeed {
 
     @Override
     public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        int requiredSize = world.getGameRules().getValue(UnionizedVillagers.ROOM_SIZE);
+        int requiredSize = world.getGameRules().getInt(UnionizedVillagers.ROOM_SIZE);
 
         ShapeContext shapeContext = ShapeContext.of(villagerEntity);
         Set<BlockPos> visited = new ObjectOpenHashSet<>();

@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -24,7 +23,6 @@ import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -40,10 +38,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.World;
-import net.minecraft.world.rule.GameRuleCategory;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 public class UnionizedVillagersImpl implements ModInitializer {
@@ -56,17 +54,18 @@ public class UnionizedVillagersImpl implements ModInitializer {
     public void onInitialize() {
         VillagerNeeds.initialize();
 
-        UnionizedVillagers.DEBUG = GameRuleBuilder.forBoolean(false).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("debug_unionized_villagers"));
-        UnionizedVillagers.VIEW_RANGE = GameRuleBuilder.forInteger(32).range(1, 128).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("villager_view_range"));
-        UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS = GameRuleBuilder.forBoolean(false).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("villager_see_monsters_through_walls"));
-        UnionizedVillagers.ROOM_SIZE = GameRuleBuilder.forInteger(9).category(GameRuleCategory.MOBS).buildAndRegister(UnionizedVillagersImpl.id("villager_room_minimum_size"));
+        try {
+            MethodHandles.lookup().ensureInitialized(UnionizedVillagers.class);
+        } catch (IllegalAccessException e) {
+            throw new AssertionError(e);
+        }
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, attacker, victim, source) -> {
             if (attacker instanceof ServerPlayerEntity player && !player.isInvisible() && !victim.isInvisible()) {
                 boolean isGuardian = victim.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG);
 
                 // sense villagers
-                int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+                int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
                 EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, victim.getBlockPos(), searchDistance, villager -> {
                     // killing guardian
                     if (isGuardian && villager.getVisibilityCache().canSee(player)) {
@@ -103,7 +102,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
             if (entity.getEntityWorld() instanceof ServerWorld world && source.getAttacker() instanceof ServerPlayerEntity player && EntitySensing.isVisible(player)) {
                 if (entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG) && EntitySensing.isVisible(entity)) {
                     // sense villagers
-                    int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+                    int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
                     @Nullable VillagerEntity witness = EntitySensing.getFirst(world, EntitySensing.VILLAGER_FILTER, entity.getBlockPos(), searchDistance, villager -> villager.getVisibilityCache().canSee(player));
                     if (witness != null) {
                         UnionizedVillagers.emitTrigger(world, player, witness, witness, StrikeTriggers.ATTACKING_GUARDIAN);
@@ -125,7 +124,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
             if (world instanceof ServerWorld serverWorld && player instanceof ServerPlayerEntity serverPlayer && blockEntity instanceof ChestBlockEntity chest && EntitySensing.isVisible(serverPlayer)) {
                 @Nullable RegistryKey<LootTable> lootTable = ((LootableContainerBlockEntityAccessor) chest).unionized$getLootTable();
                 if (lootTable != null && lootTable.getValue().getPath().startsWith("chests/village/")) {
-                    int searchDistance = serverWorld.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+                    int searchDistance = serverWorld.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
                     EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, chest.getPos(), searchDistance, villager -> {
                         VillagerData data = villager.getVillagerData();
 
@@ -190,7 +189,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
     public static boolean beginStrike(ServerWorld world, Vec3d center) {
         // sense villagers
-        int searchDistance = Math.max(world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE), STRIKE_RANGE);
+        int searchDistance = Math.max(world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE), STRIKE_RANGE);
         BlockPos centerPos = BlockPos.ofFloored(center);
 
         MutableBoolean success = new MutableBoolean(false);
@@ -242,7 +241,7 @@ public class UnionizedVillagersImpl implements ModInitializer {
 
     public static void sendDebug(World world, Text debugText) {
         for (ServerPlayerEntity player : world.getServer().getPlayerManager().getPlayerList()) {
-            if (CommandManager.GAMEMASTERS_CHECK.allows(player.getPermissions())) {
+            if (player.hasPermissionLevel(2)) {
                 player.sendMessage(debugText);
             }
         }

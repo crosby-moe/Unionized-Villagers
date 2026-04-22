@@ -2,6 +2,8 @@ package moe.crosby.unionizedvillagers.api;
 
 import com.google.common.collect.ImmutableList;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -11,15 +13,15 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.rule.GameRule;
+import net.minecraft.world.GameRules;
 
 import java.util.Collection;
 
 public class UnionizedVillagers {
-    public static GameRule<Boolean> DEBUG;
-    public static GameRule<Integer> VIEW_RANGE;
-    public static GameRule<Boolean> SEE_MONSTERS_THROUGH_WALLS;
-    public static GameRule<Integer> ROOM_SIZE;
+    public static final GameRules.Key<GameRules.BooleanRule> DEBUG = GameRuleRegistry.register("unionized$debugVillagers", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(false));
+    public static final GameRules.Key<GameRules.IntRule> VIEW_RANGE = GameRuleRegistry.register("unionized$villagerViewRange", GameRules.Category.MOBS, GameRuleFactory.createIntRule(32, 1, 256));
+    public static final GameRules.Key<GameRules.BooleanRule> SEE_MONSTERS_THROUGH_WALLS = GameRuleRegistry.register("unionized$villagerSeeMonsterThroughWalls", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(false));
+    public static final GameRules.Key<GameRules.IntRule> ROOM_SIZE = GameRuleRegistry.register("unionized$villagerRoomMinimumSize", GameRules.Category.MOBS, GameRuleFactory.createIntRule(9, 0, 64));
 
     public static final TagKey<EntityType<?>> GUARDIANS_ENTITY_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, UnionizedVillagersImpl.id("guardians"));
     public static final TagKey<StatusEffect> POISONS_TAG = TagKey.of(RegistryKeys.STATUS_EFFECT, UnionizedVillagersImpl.id("poisons"));

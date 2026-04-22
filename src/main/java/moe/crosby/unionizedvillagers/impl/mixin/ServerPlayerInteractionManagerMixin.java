@@ -41,7 +41,7 @@ public class ServerPlayerInteractionManagerMixin {
         }
 
         // sense villagers
-        int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+        int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         List<VillagerEntity> villagers = EntitySensing.getEntities(world, EntitySensing.VILLAGER_FILTER, pos, searchDistance, Predicates.alwaysTrue());
 
         boolean isJobSite = false;

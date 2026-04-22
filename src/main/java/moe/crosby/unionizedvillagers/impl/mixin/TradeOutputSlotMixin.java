@@ -37,7 +37,7 @@ public class TradeOutputSlotMixin {
 
             if (this.merchant instanceof VillagerEntity villager && villager.getEntityWorld() instanceof ServerWorld world && player instanceof ServerPlayerEntity serverPlayer && ((IVillagerEntity) villager).unionized$isInStrike() && StrikeTradeOffers.isEndStrikeStack(stack) && (tradeOffer.depleteBuyItems(itemStack, itemStack2) || tradeOffer.depleteBuyItems(itemStack2, itemStack))) {
                 // disable striking state
-                int searchDistance = Math.max(world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE), 48) + 16;
+                int searchDistance = Math.max(world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE), 48) + 16;
                 EntitySensing.forEach(world, EntitySensing.VILLAGER_FILTER, villager.getBlockPos(), searchDistance, innerVillager -> {
                     UnionizedVillagersImpl.endStrike(innerVillager);
                     return LazyIterationConsumer.NextIteration.CONTINUE;

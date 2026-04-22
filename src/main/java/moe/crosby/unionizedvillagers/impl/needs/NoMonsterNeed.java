@@ -32,8 +32,8 @@ public class NoMonsterNeed extends VillagerNeed {
             return false;
         }
 
-        int searchRadius = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
-        boolean seeThroughWalls = world.getGameRules().getValue(UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS);
+        int searchRadius = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
+        boolean seeThroughWalls = world.getGameRules().getBoolean(UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS);
 
         @Nullable HostileEntity seenMonster = EntitySensing.getFirst(
             world, EntitySensing.HOSTILE_FILTER, villagerEntity.getBlockPos(), searchRadius,

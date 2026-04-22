@@ -6,7 +6,7 @@ import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.TradeOfferList;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MerchantEntity.class)
 public class MerchantEntityMixin {
-    @Shadow @Nullable protected TradeOfferList offers;
+    @Shadow @Nullable
+    protected TradeOfferList offers;
 
     /**
      * Prevent serializing strike offers as the regular offers

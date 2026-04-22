@@ -18,7 +18,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 public class StrikeTrackerCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("strike_tracker")
-            .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
+            .requires(CommandManager.requirePermissionLevel(2))
 
             .then(literal("get")
                 .executes(context -> get(context.getSource(), context.getSource().getPlayerOrThrow()))

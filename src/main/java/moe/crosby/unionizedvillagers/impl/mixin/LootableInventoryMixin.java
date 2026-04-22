@@ -14,7 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.village.VillagerData;
 import net.minecraft.world.World;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,7 +30,7 @@ public interface LootableInventoryMixin {
     private void checkLootIn(PlayerEntity player, CallbackInfo ci) {
         if (this.getWorld() instanceof ServerWorld serverWorld && (Object) this instanceof ChestBlockEntity blockEntity && this.getLootTable() != null && this.getLootTable().getValue().getPath().startsWith("chests/village/")
             && player instanceof ServerPlayerEntity serverPlayer && EntitySensing.isVisible(player)) {
-            int searchDistance = serverWorld.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+            int searchDistance = serverWorld.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
             EntitySensing.forEach(serverWorld, EntitySensing.VILLAGER_FILTER, blockEntity.getPos(), searchDistance, villager -> {
                 VillagerData data = villager.getVillagerData();
 

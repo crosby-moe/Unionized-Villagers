@@ -34,6 +34,6 @@ public class StrikeTradeOffers {
     }
 
     private static TradeOffers.Factory create(Item item, int count) {
-        return (world, entity, random) -> new TradeOffer(new TradedItem(item, count), END_STRIKE_STACK, 1, 0, 0);
+        return (entity, random) -> new TradeOffer(new TradedItem(item, count), END_STRIKE_STACK, 1, 0, 0);
     }
 }

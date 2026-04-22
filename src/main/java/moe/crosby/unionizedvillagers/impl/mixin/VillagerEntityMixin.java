@@ -88,7 +88,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         if (this.getEntityWorld() instanceof ServerWorld serverWorld) {
             VillagerEntity villagerEntity = (VillagerEntity) (Object) this;
 
-            boolean shouldDebug = serverWorld.getGameRules().getValue(UnionizedVillagers.DEBUG);
+            boolean shouldDebug = serverWorld.getGameRules().getBoolean(UnionizedVillagers.DEBUG);
             boolean shouldCancel = false;
 
             for (VillagerNeed need : VillagerNeeds.VILLAGER_NEEDS) {
@@ -194,9 +194,7 @@ public abstract class VillagerEntityMixin extends MerchantEntity implements IVil
         }
 
         TradeOfferList tradeOffers = new TradeOfferList();
-        if (this.getEntityWorld() instanceof ServerWorld serverWorld) {
-            this.fillRecipesFromPool(serverWorld, tradeOffers, StrikeTradeOffers.OFFERS, 1);
-        }
+        this.fillRecipesFromPool(tradeOffers, StrikeTradeOffers.OFFERS, 1);
         return this.savedStrikeTrades = tradeOffers;
     }
 }

@@ -26,7 +26,7 @@ public class StrikingTasks {
                 long l = context.getValue(strikeStartTime);
                 if (l + STRIKE_LENGTH_TICKS <= time) {
                     strikeStartTime.forget();
-                    entity.getBrain().refreshActivities(world.getEnvironmentAttributes(), world.getTime(), entity.getEntityPos());
+                    entity.getBrain().refreshActivities(world.getTimeOfDay(), world.getTime());
                 }
                 return true;
             })

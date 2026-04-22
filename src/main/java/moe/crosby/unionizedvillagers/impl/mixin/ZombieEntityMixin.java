@@ -27,7 +27,7 @@ public class ZombieEntityMixin {
         }
 
         // sense villagers
-        int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+        int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
         Box searchBox = new Box(other.getBlockPos()).expand(searchDistance);
         List<ServerPlayerEntity> players = world.getEntitiesByClass(ServerPlayerEntity.class, searchBox, entity -> !entity.isInvisible() && !entity.isSpectator());
 

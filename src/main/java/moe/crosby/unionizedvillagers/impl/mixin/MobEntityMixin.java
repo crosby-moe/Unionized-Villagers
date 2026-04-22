@@ -74,7 +74,7 @@ public abstract class MobEntityMixin extends LivingEntity {
     private void injectStartRiding(Entity entity, boolean force, boolean emitEvent, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof VillagerEntity villager && !force && (entity instanceof BoatEntity || entity instanceof MinecartEntity) && this.getEntityWorld() instanceof ServerWorld world) {
             // sense villagers
-            int searchDistance = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
+            int searchDistance = world.getGameRules().getInt(UnionizedVillagers.VIEW_RANGE);
 
             List<ServerPlayerEntity> players = EntitySensing.getEntities(world, EntitySensing.PLAYER_FILTER, entity.getBlockPos(), searchDistance, player -> EntitySensing.isVisible(player) && this.getVisibilityCache().canSee(player));
 
