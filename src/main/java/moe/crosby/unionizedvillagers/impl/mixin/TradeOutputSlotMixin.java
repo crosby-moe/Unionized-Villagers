@@ -45,7 +45,9 @@ public class TradeOutputSlotMixin {
 
                 // cancel the trade
                 ci.cancel();
-                stack.setCount(0);
+                if (StrikeTradeOffers.isEndStrikeStack(serverPlayer.currentScreenHandler.getCursorStack())) { // sanity check
+                    serverPlayer.currentScreenHandler.getCursorStack().setCount(0);
+                }
 
                 // manually decrement inputs
                 this.merchantInventory.setStack(0, itemStack);
@@ -56,6 +58,9 @@ public class TradeOutputSlotMixin {
 
                 // send message
                 serverPlayer.sendMessage(UnionizedVillagersImpl.of(villager).append(Text.translatable("unionized-villagers.text.strike_ended")));
+
+                // allow ending strikes in the future
+                tradeOffer.resetUses();
             }
         }
     }
