@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.15-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
 }
 
 base {
@@ -17,16 +17,15 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${project.properties["minecraft_version"] as String}")
-    mappings("net.fabricmc:yarn:${project.properties["yarn_mappings"] as String}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${project.properties["loader_version"] as String}")
+    implementation("net.fabricmc:fabric-loader:${project.properties["loader_version"] as String}")
 
-    modCompileOnly(fabricApi.module("fabric-game-rule-api-v1", project.properties["fabric_version"] as String))
-    modCompileOnly(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))
-    modCompileOnly(fabricApi.module("fabric-events-interaction-v0", project.properties["fabric_version"] as String))
-    modCompileOnly(fabricApi.module("fabric-command-api-v2", project.properties["fabric_version"] as String))
-    modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"] as String}")
+    compileOnly(fabricApi.module("fabric-game-rule-api-v1", project.properties["fabric_version"] as String))
+    compileOnly(fabricApi.module("fabric-entity-events-v1", project.properties["fabric_version"] as String))
+    compileOnly(fabricApi.module("fabric-events-interaction-v0", project.properties["fabric_version"] as String))
+    compileOnly(fabricApi.module("fabric-command-api-v2", project.properties["fabric_version"] as String))
+    runtimeOnly("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"] as String}")
 
-    modImplementation(include("xyz.nucleoid:server-translations-api:2.5.2+1.21.9-pre3") {
+    implementation(include("xyz.nucleoid:server-translations-api:3.0.3+26.1") {
         exclude("net.fabricmc.fabric-api", "fabric-api")
     })
 }
