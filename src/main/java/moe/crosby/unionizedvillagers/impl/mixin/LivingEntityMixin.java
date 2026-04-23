@@ -18,7 +18,7 @@ public class LivingEntityMixin {
      * @see CachingRaycastFunction
      */
     @WrapOperation(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/ClipContext$Block;Lnet/minecraft/world/level/ClipContext$Fluid;D)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;clip(Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;"))
-    private BlockHitResult replaceRaycast(Level world, ClipContext context, Operation<BlockHitResult> original, @Local(argsOnly = true) ClipContext.Block blockCollidingContext, @Local(argsOnly = true) ClipContext.Fluid fluidCollidingContext) {
+    private BlockHitResult replaceRaycast(Level world, ClipContext context, Operation<BlockHitResult> original, @Local(argsOnly = true, name = "blockCollidingContext") ClipContext.Block blockCollidingContext, @Local(argsOnly = true, name = "fluidCollidingContext") ClipContext.Fluid fluidCollidingContext) {
         if (blockCollidingContext == ClipContext.Block.COLLIDER && fluidCollidingContext == ClipContext.Fluid.NONE) {
             return CachingRaycastFunction.Collision.raycast(world, context);
         } else {

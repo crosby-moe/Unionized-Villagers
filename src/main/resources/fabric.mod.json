@@ -29,7 +29,7 @@
         "unionized-villagers.mixins.json"
     ],
     "depends": {
-        "fabricloader": "*",
+        "fabricloader": ">=0.18.4",
         "fabric-api": "*",
         "server_translations_api": "*",
         "minecraft": "~26.1"

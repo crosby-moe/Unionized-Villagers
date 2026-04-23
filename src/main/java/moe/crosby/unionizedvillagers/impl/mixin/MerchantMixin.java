@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(Merchant.class)
 public interface MerchantMixin {
     @WrapOperation(method = "openTradingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/trading/Merchant;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;"))
-    private MerchantOffers wrapOffers(Merchant merchant, Operation<MerchantOffers> original, @Local(argsOnly = true) Player player) {
+    private MerchantOffers wrapOffers(Merchant merchant, Operation<MerchantOffers> original, @Local(argsOnly = true, name = "player") Player player) {
         if (merchant instanceof IVillager villager && villager.unionized$isInStrike()) {
             Villager Villager = (Villager) merchant;
 
