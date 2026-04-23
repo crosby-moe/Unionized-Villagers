@@ -1,16 +1,16 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.tag.PointOfInterestTypeTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.poi.PointOfInterest;
-import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.tags.PoiTypeTags;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.entity.ai.village.poi.PoiRecord;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
 
 import java.util.Optional;
 
@@ -20,24 +20,24 @@ public class NoAdjacentWorkstationNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        Optional<GlobalPos> jobOpt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        Optional<GlobalPos> jobOpt = Villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
 
-        if (world instanceof ServerWorld serverWorld && jobOpt.isPresent() && jobOpt.get().dimension() == world.getRegistryKey()) {
+        if (world instanceof ServerLevel serverWorld && jobOpt.isPresent() && jobOpt.get().dimension() == world.dimension()) {
             BlockPos jobPos = jobOpt.get().pos();
 
-            Optional<BlockPos> otherPos = serverWorld.getPointOfInterestStorage().getInSquare(
-                poi -> poi.isIn(PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE),
-                villagerEntity.getBlockPos(),
+            Optional<BlockPos> otherPos = serverWorld.getPoiManager().getInSquare(
+                poi -> poi.is(PoiTypeTags.ACQUIRABLE_JOB_SITE),
+                Villager.blockPosition(),
                 8,
-                PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
-                .map(PointOfInterest::getPos)
+                PoiManager.Occupancy.IS_OCCUPIED)
+                .map(PoiRecord::getPos)
                 .filter(pos -> !pos.equals(jobPos))
                 .findAny();
 
             boolean isMet = otherPos.isEmpty();
 
-            debug(villagerEntity, isMet, () -> "other job site at " + otherPos.orElse(null));
+            debug(Villager, isMet, () -> "other job site at " + otherPos.orElse(null));
 
             return isMet;
         }

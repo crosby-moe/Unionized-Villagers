@@ -1,30 +1,31 @@
 package moe.crosby.unionizedvillagers.impl.fast;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import moe.crosby.unionizedvillagers.impl.mixin.WorldInvoker;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.function.LazyIterationConsumer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
-import net.minecraft.world.entity.EntityLookup;
+import moe.crosby.unionizedvillagers.impl.mixin.LevelInvoker;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.util.AbortableIterationConsumer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.LevelEntityGetter;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class EntitySensing {
-    public static final TypeFilter<Entity, VillagerEntity> VILLAGER_FILTER = TypeFilter.instanceOf(VillagerEntity.class);
-    public static final TypeFilter<Entity, ServerPlayerEntity> PLAYER_FILTER = TypeFilter.instanceOf(ServerPlayerEntity.class);
-    public static final TypeFilter<Entity, HostileEntity> HOSTILE_FILTER = TypeFilter.instanceOf(HostileEntity.class);
+    public static final EntityTypeTest<@NotNull Entity, @NotNull Villager> VILLAGER_FILTER = EntityTypeTest.forClass(Villager.class);
+    public static final EntityTypeTest<@NotNull Entity, @NotNull ServerPlayer> PLAYER_FILTER = EntityTypeTest.forClass(ServerPlayer.class);
+    public static final EntityTypeTest<@NotNull Entity, @NotNull Monster> HOSTILE_FILTER = EntityTypeTest.forClass(Monster.class);
 
-    public static boolean isVisible(PlayerEntity player) {
+    public static boolean isVisible(Player player) {
         return !player.isSpectator() && !player.isInvisible() && !player.isCreative() && player.isAlive();
     }
 
@@ -32,47 +33,47 @@ public class EntitySensing {
         return !entity.isInvisible() && entity.isAlive();
     }
 
-    public static <E extends Entity> @Nullable E getFirst(World world, TypeFilter<Entity, E> type, BlockPos origin, int radius, Predicate<E> filter) {
-        Box box = boxbox(origin, radius);
+    public static <E extends Entity> @Nullable E getFirst(Level world, EntityTypeTest<@NotNull Entity, @NotNull E> type, BlockPos origin, int radius, Predicate<E> filter) {
+        AABB box = boxbox(origin, radius);
         MutableObject<E> reference = new MutableObject<>(null);
-        EntityLookup<Entity> lookup = ((WorldInvoker) world).unionized$getEntityLookup();
+        LevelEntityGetter<@NotNull Entity> lookup = ((LevelInvoker) world).unionized$getEntities();
 
-        lookup.forEachIntersects(type, box, entity -> {
+        lookup.get(type, box, entity -> {
             if (filter.test(entity)) {
                 reference.setValue(entity);
-                return LazyIterationConsumer.NextIteration.ABORT;
+                return AbortableIterationConsumer.Continuation.ABORT;
             }
 
-            return LazyIterationConsumer.NextIteration.CONTINUE;
+            return AbortableIterationConsumer.Continuation.CONTINUE;
         });
 
         return reference.get();
     }
 
-    public static <E extends Entity> List<E> getEntities(World world, TypeFilter<Entity, E> type, BlockPos origin, int radius, Predicate<E> filter) {
-        Box box = boxbox(origin, radius);
-        EntityLookup<Entity> lookup = ((WorldInvoker) world).unionized$getEntityLookup();
+    public static <E extends Entity> List<E> getEntities(Level world, EntityTypeTest<@NotNull Entity, @NotNull E> type, BlockPos origin, int radius, Predicate<E> filter) {
+        AABB box = boxbox(origin, radius);
+        LevelEntityGetter<@NotNull Entity> lookup = ((LevelInvoker) world).unionized$getEntities();
         List<E> list = new ObjectArrayList<>();
 
-        lookup.forEachIntersects(type, box, entity -> {
+        lookup.get(type, box, entity -> {
             if (filter.test(entity)) {
                 list.add(entity);
             }
 
-            return LazyIterationConsumer.NextIteration.CONTINUE;
+            return AbortableIterationConsumer.Continuation.CONTINUE;
         });
 
         return list;
     }
 
-    public static <E extends Entity> void forEach(World world, TypeFilter<Entity, E> type, BlockPos origin, int radius, LazyIterationConsumer<E> consumer) {
-        Box box = boxbox(origin, radius);
-        EntityLookup<Entity> lookup = ((WorldInvoker) world).unionized$getEntityLookup();
-        lookup.forEachIntersects(type, box, consumer);
+    public static <E extends Entity> void forEach(Level world, EntityTypeTest<@NotNull Entity, @NotNull E> type, BlockPos origin, int radius, AbortableIterationConsumer<@NotNull E> consumer) {
+        AABB box = boxbox(origin, radius);
+        LevelEntityGetter<@NotNull Entity> lookup = ((LevelInvoker) world).unionized$getEntities();
+        lookup.get(type, box, consumer);
     }
 
-    private static Box boxbox(BlockPos origin, int radius) {
-        return new Box(
+    private static AABB boxbox(BlockPos origin, int radius) {
+        return new AABB(
             origin.getX() - radius,
             origin.getY() - radius,
             origin.getZ() - radius,

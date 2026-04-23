@@ -4,10 +4,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import moe.crosby.unionizedvillagers.impl.fast.CachingRaycastFunction;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -17,9 +17,9 @@ public class LivingEntityMixin {
      * Replace expensive raycast with faster one
      * @see CachingRaycastFunction
      */
-    @WrapOperation(method = "canSee(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/RaycastContext$ShapeType;Lnet/minecraft/world/RaycastContext$FluidHandling;D)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;raycast(Lnet/minecraft/world/RaycastContext;)Lnet/minecraft/util/hit/BlockHitResult;"))
-    private BlockHitResult replaceRaycast(World world, RaycastContext context, Operation<BlockHitResult> original, @Local(argsOnly = true) RaycastContext.ShapeType shapeType, @Local(argsOnly = true) RaycastContext.FluidHandling fluidHandling) {
-        if (shapeType == RaycastContext.ShapeType.COLLIDER && fluidHandling == RaycastContext.FluidHandling.NONE) {
+    @WrapOperation(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/ClipContext$Block;Lnet/minecraft/world/level/ClipContext$Fluid;D)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;clip(Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;"))
+    private BlockHitResult replaceRaycast(Level world, ClipContext context, Operation<BlockHitResult> original, @Local(argsOnly = true) ClipContext.Block blockCollidingContext, @Local(argsOnly = true) ClipContext.Fluid fluidCollidingContext) {
+        if (blockCollidingContext == ClipContext.Block.COLLIDER && fluidCollidingContext == ClipContext.Fluid.NONE) {
             return CachingRaycastFunction.Collision.raycast(world, context);
         } else {
             return original.call(world, context);

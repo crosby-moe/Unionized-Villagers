@@ -3,18 +3,18 @@ package moe.crosby.unionizedvillagers.impl;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Mth;
 
 import java.util.Set;
 
 public class VillagerStrikeWarningManager {
     public static final Codec<VillagerStrikeWarningManager> CODEC = RecordCodecBuilder.create(
         instance -> instance.group(
-                Codecs.NON_NEGATIVE_INT.fieldOf("ticks_since_last_warning").orElse(0).forGetter(manager -> manager.ticksSinceLastWarning),
-                Codecs.NON_NEGATIVE_INT.fieldOf("warning_level").orElse(0).forGetter(manager -> manager.warningLevel),
-                Codecs.NON_NEGATIVE_INT.fieldOf("cooldown_ticks").orElse(0).forGetter(manager -> manager.cooldownTicks)
+                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("ticks_since_last_warning").orElse(0).forGetter(manager -> manager.ticksSinceLastWarning),
+                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("warning_level").orElse(0).forGetter(manager -> manager.warningLevel),
+                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("cooldown_ticks").orElse(0).forGetter(manager -> manager.cooldownTicks)
             )
             .apply(instance, VillagerStrikeWarningManager::new)
     );
@@ -22,7 +22,7 @@ public class VillagerStrikeWarningManager {
     private static final double WARN_RANGE = 32d;
     private static final int WARN_DECREASE_COOLDOWN = 12000;
     private static final int WARN_INCREASE_COOLDOWN = 200;
-    private transient final Set<VillagerEntity> victims = new ObjectOpenHashSet<>();
+    private transient final Set<Villager> victims = new ObjectOpenHashSet<>();
     private int ticksSinceLastWarning;
     private int warningLevel;
     private int cooldownTicks;
@@ -75,7 +75,7 @@ public class VillagerStrikeWarningManager {
     }
 
     public void setWarningLevel(int warningLevel) {
-        this.warningLevel = MathHelper.clamp(warningLevel, 0, MAX_WARNING_LEVEL);
+        this.warningLevel = Mth.clamp(warningLevel, 0, MAX_WARNING_LEVEL);
     }
 
     public int getWarningLevel() {

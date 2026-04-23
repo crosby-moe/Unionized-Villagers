@@ -2,12 +2,13 @@ package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Villager need that ensures a villager does not have a status effect that is considered a poison
@@ -19,15 +20,15 @@ public class NotPoisonedNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        for (RegistryEntry<StatusEffect> effectType : villagerEntity.getActiveStatusEffects().keySet()) {
-            if (effectType.isIn(UnionizedVillagers.POISONS_TAG)) {
-                debug(villagerEntity, false, () -> "villager has effect " + effectType.getIdAsString());
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        for (Holder<@NotNull MobEffect> effectType : Villager.getActiveEffectsMap().keySet()) {
+            if (effectType.is(UnionizedVillagers.POISONS_TAG)) {
+                debug(Villager, false, () -> "villager has effect " + effectType.getRegisteredName());
                 return false;
             }
         }
 
-        debug(villagerEntity, true, null);
+        debug(Villager, true, null);
         return true;
     }
 }

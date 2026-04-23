@@ -1,10 +1,10 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
 
 /**
  * Villager need that ensures it is not damaged
@@ -15,9 +15,9 @@ public class NotDamagedNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        boolean isMet = villagerEntity.getHealth() >= villagerEntity.getMaxHealth();
-        debug(villagerEntity, isMet, () -> String.format("villager health is %.1f out of %.1f", villagerEntity.getHealth(), villagerEntity.getMaxHealth()));
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        boolean isMet = Villager.getHealth() >= Villager.getMaxHealth();
+        debug(Villager, isMet, () -> String.format("villager health is %.1f out of %.1f", Villager.getHealth(), Villager.getMaxHealth()));
 
         return isMet;
     }

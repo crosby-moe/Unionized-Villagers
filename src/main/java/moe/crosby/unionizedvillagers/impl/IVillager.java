@@ -1,11 +1,11 @@
 package moe.crosby.unionizedvillagers.impl;
 
-import net.minecraft.village.TradeOfferList;
+import net.minecraft.world.item.trading.MerchantOffers;
 
-public interface IVillagerEntity {
+public interface IVillager {
     void unionized$endStrike();
     boolean unionized$isInStrike();
-    TradeOfferList unionized$getStrikeOffers();
+    MerchantOffers unionized$getStrikeOffers();
 
     void unionized$triggerMonsterNoise();
     boolean unionized$heardMonsterNoise();

@@ -1,13 +1,13 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.GlobalPos;
 
 import java.util.Optional;
 
@@ -20,12 +20,12 @@ public class InHomeDimensionNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        Optional<GlobalPos> opt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        Optional<GlobalPos> opt = Villager.getBrain().getMemory(MemoryModuleType.HOME);
 
-        boolean isMet = opt.isEmpty() || opt.get().dimension() == world.getRegistryKey();
+        boolean isMet = opt.isEmpty() || opt.get().dimension() == world.dimension();
 
-        debug(villagerEntity, isMet, () -> "home is in " + opt.map(GlobalPos::dimension).map(RegistryKey::getValue).orElse(null));
+        debug(Villager, isMet, () -> "home is in " + opt.map(GlobalPos::dimension).map(ResourceKey::identifier).orElse(null));
 
         return isMet;
     }

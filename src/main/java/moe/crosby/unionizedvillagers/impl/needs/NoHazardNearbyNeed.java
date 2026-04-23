@@ -4,15 +4,14 @@ import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
 import moe.crosby.unionizedvillagers.impl.fast.CachingRaycastFunction;
 import moe.crosby.unionizedvillagers.impl.fast.ChunkAwareBlockSweeper;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.ClipContext;
 
 /**
  * Villager need that ensures there are no visible hazards nearby
@@ -25,8 +24,8 @@ public class NoHazardNearbyNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        BlockPos origin = villagerEntity.getBlockPos();
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        BlockPos origin = Villager.blockPosition();
         int minX = origin.getX() - SEARCH_RADIUS;
         int minY = origin.getY() - SEARCH_RADIUS;
         int minZ = origin.getZ() - SEARCH_RADIUS;
@@ -37,30 +36,30 @@ public class NoHazardNearbyNeed extends VillagerNeed {
         for (ChunkAwareBlockSweeper it = new ChunkAwareBlockSweeper(world, minX, maxX, minY, maxY, minZ, maxZ); it.hasNext(); ) {
             ChunkAwareBlockSweeper.Entry entry = it.next();
 
-            if (entry.getState().isIn(UnionizedVillagers.HAZARDS_TAG) && canSee(villagerEntity, entry.getPos())) {
-                debug(villagerEntity, false, () -> "hazard is at " + entry.getPos());
+            if (entry.getState().is(UnionizedVillagers.HAZARDS_TAG) && canSee(Villager, entry.getPos())) {
+                debug(Villager, false, () -> "hazard is at " + entry.getPos());
                 return false;
             }
         }
 
-        debug(villagerEntity, true, null);
+        debug(Villager, true, null);
         return true;
     }
 
-    private boolean canSee(VillagerEntity villagerEntity, BlockPos blockPos) {
-        Vec3d startPos = new Vec3d(villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ());
-        Vec3d endPos = Vec3d.ofCenter(blockPos);
+    private boolean canSee(Villager Villager, BlockPos blockPos) {
+        Vec3 startPos = new Vec3(Villager.getX(), Villager.getEyeY(), Villager.getZ());
+        Vec3 endPos = Vec3.atCenterOf(blockPos);
 
-        RaycastContext context = new RaycastContext(
+        ClipContext context = new ClipContext(
             startPos,
             endPos,
-            RaycastContext.ShapeType.VISUAL,
-            RaycastContext.FluidHandling.ANY,
-            villagerEntity
+            ClipContext.Block.VISUAL,
+            ClipContext.Fluid.ANY,
+            Villager
         );
 
-        BlockHitResult result = CachingRaycastFunction.Visual.raycast(villagerEntity.getEntityWorld(), context);
+        BlockHitResult result = CachingRaycastFunction.Visual.raycast(Villager.level(), context);
 
-        return result.getType() == HitResult.Type.MISS || result.getBlockPos().equals(blockPos);
+        return result.getType() == BlockHitResult.Type.MISS || result.getBlockPos().equals(blockPos);
     }
 }

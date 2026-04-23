@@ -1,13 +1,13 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
@@ -20,20 +20,20 @@ public class NotAttackedNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        Optional<LivingEntity> hurtByEntityMemory = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HURT_BY_ENTITY);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        Optional<LivingEntity> hurtByEntityMemory = Villager.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY);
         if (hurtByEntityMemory.isPresent() && hurtByEntityMemory.get() == playerEntity) {
-            debug(villagerEntity, false, () -> "villager attacked by " + hurtByEntityMemory.get().getName().getString());
+            debug(Villager, false, () -> "villager attacked by " + hurtByEntityMemory.get().getName().getString());
             return false;
         }
 
-        Optional<DamageSource> hurtByMemory = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HURT_BY);
-        if (hurtByMemory.isPresent() && hurtByMemory.get().getAttacker() == playerEntity) {
-            debug(villagerEntity, false, () -> "villager attacked by " + hurtByMemory.get().getAttacker().getName().getString());
+        Optional<DamageSource> hurtByMemory = Villager.getBrain().getMemory(MemoryModuleType.HURT_BY);
+        if (hurtByMemory.isPresent() && hurtByMemory.get().getEntity() == playerEntity) {
+            debug(Villager, false, () -> "villager attacked by " + hurtByMemory.get().getEntity().getName().getString());
             return false;
         }
 
-        debug(villagerEntity, true, null);
+        debug(Villager, true, null);
         return true;
     }
 }

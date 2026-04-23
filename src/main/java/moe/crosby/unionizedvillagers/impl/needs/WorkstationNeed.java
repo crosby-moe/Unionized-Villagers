@@ -1,12 +1,12 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.GlobalPos;
 
 import java.util.Optional;
 
@@ -19,11 +19,11 @@ public class WorkstationNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        Optional<GlobalPos> jobOpt = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        Optional<GlobalPos> jobOpt = Villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
         boolean isMet = jobOpt.isPresent();
 
-        debug(villagerEntity, isMet, () -> "job site at " + jobOpt.map(GlobalPos::pos).orElse(null));
+        debug(Villager, isMet, () -> "job site at " + jobOpt.map(GlobalPos::pos).orElse(null));
 
         return isMet;
     }

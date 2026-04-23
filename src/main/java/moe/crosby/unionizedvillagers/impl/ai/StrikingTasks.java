@@ -1,35 +1,48 @@
 package moe.crosby.unionizedvillagers.impl.ai;
 
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.ai.brain.task.TaskTriggerer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.BehaviorControl;
+import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
+import org.jetbrains.annotations.NotNull;
 
 public class StrikingTasks {
     private static final int STRIKE_LENGTH_TICKS = 20 * 60 * 20; // one ingame day
 
-    public static Task<LivingEntity> createStart() {
-        return TaskTriggerer.task(
-            context -> context.group(context.queryMemoryValue(UnionizedVillagersImpl.STRIKE_START_TIME)).apply(context, strikeStartTime -> (world, entity, time) -> {
-                long l = context.getValue(strikeStartTime);
-                if (l + STRIKE_LENGTH_TICKS > time) {
-                    entity.getBrain().doExclusively(UnionizedVillagersImpl.STRIKE);
+    public static BehaviorControl<@NotNull LivingEntity> createStart() {
+        return BehaviorBuilder.create(
+            i -> i.group(
+                i.present(UnionizedVillagersImpl.STRIKE_START_TIME)
+            )
+            .apply(
+                i,
+                (strikeStartTime) -> (level, body, timestamp) -> {
+                    long l = i.get(strikeStartTime);
+                    if (l + STRIKE_LENGTH_TICKS > timestamp) {
+                        body.getBrain().setActiveActivityIfPossible(UnionizedVillagersImpl.STRIKE);
+                    }
+                    return true;
                 }
-                return true;
-            })
+            )
         );
     }
 
-    public static Task<LivingEntity> createStop() {
-        return TaskTriggerer.task(
-            context -> context.group(context.queryMemoryValue(UnionizedVillagersImpl.STRIKE_START_TIME)).apply(context, strikeStartTime -> (world, entity, time) -> {
-                long l = context.getValue(strikeStartTime);
-                if (l + STRIKE_LENGTH_TICKS <= time) {
-                    strikeStartTime.forget();
-                    entity.getBrain().refreshActivities(world.getEnvironmentAttributes(), world.getTime(), entity.getEntityPos());
+    public static BehaviorControl<@NotNull LivingEntity> createStop() {
+        return BehaviorBuilder.create(
+            i -> i.group(
+                i.present(UnionizedVillagersImpl.STRIKE_START_TIME)
+            )
+            .apply(
+                i,
+                (strikeStartTime) -> (level, body, timestamp) -> {
+                    long l = i.get(strikeStartTime);
+                    if (l + STRIKE_LENGTH_TICKS <= timestamp) {
+                        strikeStartTime.erase();
+                        body.getBrain().updateActivityFromSchedule(level.environmentAttributes(), level.getGameTime(), body.position());
+                    }
+                    return true;
                 }
-                return true;
-            })
+            )
         );
     }
 }

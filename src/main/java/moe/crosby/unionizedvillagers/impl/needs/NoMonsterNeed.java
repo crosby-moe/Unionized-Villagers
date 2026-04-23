@@ -2,13 +2,13 @@ package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import moe.crosby.unionizedvillagers.impl.IVillagerEntity;
+import moe.crosby.unionizedvillagers.impl.IVillager;
 import moe.crosby.unionizedvillagers.impl.fast.EntitySensing;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,28 +21,28 @@ public class NoMonsterNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
         if (world.getDifficulty() == Difficulty.PEACEFUL) {
-            debug(villagerEntity, true, () -> "world is peaceful");
+            debug(Villager, true, () -> "world is peaceful");
             return true;
         }
 
-        if (((IVillagerEntity) villagerEntity).unionized$heardMonsterNoise()) {
-            debug(villagerEntity, false, () -> "heard monster");
+        if (((IVillager) Villager).unionized$heardMonsterNoise()) {
+            debug(Villager, false, () -> "heard monster");
             return false;
         }
 
-        int searchRadius = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
-        boolean seeThroughWalls = world.getGameRules().getValue(UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS);
+        int searchRadius = world.getGameRules().get(UnionizedVillagers.VIEW_RANGE);
+        boolean seeThroughWalls = world.getGameRules().get(UnionizedVillagers.SEE_MONSTERS_THROUGH_WALLS);
 
-        @Nullable HostileEntity seenMonster = EntitySensing.getFirst(
-            world, EntitySensing.HOSTILE_FILTER, villagerEntity.getBlockPos(), searchRadius,
-            monster -> EntitySensing.isVisible(monster) && (seeThroughWalls || villagerEntity.getVisibilityCache().canSee(monster))
+        @Nullable Monster seenMonster = EntitySensing.getFirst(
+            world, EntitySensing.HOSTILE_FILTER, Villager.blockPosition(), searchRadius,
+            monster -> EntitySensing.isVisible(monster) && (seeThroughWalls || Villager.getSensing().hasLineOfSight(monster))
         );
 
         boolean isMet = seenMonster == null;
 
-        debug(villagerEntity, isMet, () -> "monster is at " + (seenMonster == null ? null : seenMonster.getBlockPos()));
+        debug(Villager, isMet, () -> "monster is at " + (seenMonster == null ? null : seenMonster.blockPosition()));
 
         return isMet;
     }

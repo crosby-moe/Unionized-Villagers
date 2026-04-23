@@ -3,15 +3,15 @@ package moe.crosby.unionizedvillagers.impl.needs;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -28,36 +28,36 @@ public class RoomNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        int requiredSize = world.getGameRules().getValue(UnionizedVillagers.ROOM_SIZE);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        int requiredSize = world.getGameRules().get(UnionizedVillagers.ROOM_SIZE);
 
-        ShapeContext shapeContext = ShapeContext.of(villagerEntity);
+        CollisionContext shapeContext = CollisionContext.of(Villager);
         Set<BlockPos> visited = new ObjectOpenHashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();
-        queue.add(villagerEntity.getBlockPos());
-        visited.add(villagerEntity.getBlockPos());
+        queue.add(Villager.blockPosition());
+        visited.add(Villager.blockPosition());
         int count = 0;
 
         while (!queue.isEmpty() && count < requiredSize) {
             BlockPos pos = queue.poll();
             BlockState state = world.getBlockState(pos);
-            BlockState up = world.getBlockState(pos.up());
+            BlockState up = world.getBlockState(pos.above());
 
             // needs a floor
-            if (world.getBlockState(pos.down()).getCollisionShape(world, pos, shapeContext).getMax(Direction.Axis.Y) < 1) {
+            if (world.getBlockState(pos.below()).getCollisionShape(world, pos, shapeContext).max(Direction.Axis.Y) < 1) {
                 continue;
             }
 
             // door
             if ((isOpenableDoor(state) && isOpenableDoor(up))
                 // can fit in
-            || (state.getCollisionShape(world, pos, shapeContext).getMax(Direction.Axis.Y) <= ONE_VOXEL && up.getCollisionShape(world, pos.up(), shapeContext).isEmpty())) {
+            || (state.getCollisionShape(world, pos, shapeContext).max(Direction.Axis.Y) <= ONE_VOXEL && up.getCollisionShape(world, pos.above(), shapeContext).isEmpty())) {
 
                 // count block & increase queue
                 count++;
                 for (int i = 0; i < 4; i++) {
-                    Direction direction = Direction.fromHorizontalQuarterTurns(i);
-                    BlockPos offsetPos = pos.offset(direction);
+                    Direction direction = Direction.from2DDataValue(i);
+                    BlockPos offsetPos = pos.relative(direction);
                     if (visited.add(offsetPos)) {
                         queue.add(offsetPos);
                     }
@@ -68,12 +68,12 @@ public class RoomNeed extends VillagerNeed {
         boolean isMet = count >= requiredSize;
 
         int finalCount = count;
-        debug(villagerEntity, isMet, () -> "has " + finalCount + " blocks of free space out of " + requiredSize + " required");
+        debug(Villager, isMet, () -> "has " + finalCount + " blocks of free space out of " + requiredSize + " required");
 
         return isMet;
     }
 
     private static boolean isOpenableDoor(BlockState state) {
-        return state.getBlock() instanceof DoorBlock door && door.getBlockSetType().canOpenByHand();
+        return state.getBlock() instanceof DoorBlock door && door.type().canOpenByHand();
     }
 }

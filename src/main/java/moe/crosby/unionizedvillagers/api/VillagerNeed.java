@@ -1,12 +1,12 @@
 package moe.crosby.unionizedvillagers.api;
 
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -20,19 +20,19 @@ public abstract class VillagerNeed {
         this.priority = priority;
     }
 
-    public abstract boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity);
+    public abstract boolean isMet(ServerLevel world, Villager Villager, Player playerEntity);
 
-    protected void debug(VillagerEntity villagerEntity, boolean met, @Nullable Supplier<String> extra) {
-        if (villagerEntity.getEntityWorld() instanceof ServerWorld serverWorld && serverWorld.getGameRules().getValue(UnionizedVillagers.DEBUG)) {
+    protected void debug(Villager Villager, boolean met, @Nullable Supplier<String> extra) {
+        if (Villager.level() instanceof ServerLevel serverWorld && serverWorld.getGameRules().get(UnionizedVillagers.DEBUG)) {
             @Nullable String extraString = extra == null ? "" : extra.get();
-            UnionizedVillagersImpl.sendDebug(villagerEntity.getEntityWorld(), UnionizedVillagersImpl.of(villagerEntity)
+            UnionizedVillagersImpl.sendDebug(serverWorld, UnionizedVillagersImpl.of(Villager)
                 .append("Need '" + this.identifier + "' is ")
-                .append(Text.literal(met ? "met" : "unmet").formatted(met ? Formatting.GREEN : Formatting.RED))
+                .append(Component.literal(met ? "met" : "unmet").withStyle(met ? ChatFormatting.GREEN : ChatFormatting.RED))
                 .append(extraString == null ? "" : ", " + extraString));
         }
     }
 
     public String getTranslationKey() {
-        return this.identifier.toTranslationKey("villager-need", "description");
+        return this.identifier.toLanguageKey("villager-need", "description");
     }
 }

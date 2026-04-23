@@ -1,25 +1,26 @@
 package moe.crosby.unionizedvillagers.impl.ai;
 
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.village.VillagerData;
-import net.minecraft.village.VillagerProfession;
-import net.minecraft.village.VillagerType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class VillagerPossessions {
     public static boolean isVillagerPossession(VillagerData data, Identifier lootTableId) {
         // villager type
-        Optional<RegistryKey<VillagerType>> typeKey = data.type().getKey();
-        if (typeKey.isPresent() && lootTableId.getPath().contains(typeKey.get().getValue().getPath())) {
+        Optional<ResourceKey<@NotNull VillagerType>> typeKey = data.type().unwrapKey();
+        if (typeKey.isPresent() && lootTableId.getPath().contains(typeKey.get().identifier().getPath())) {
             return true;
         }
 
         // villager profession
-        Optional<RegistryKey<VillagerProfession>> professionKey = data.profession().getKey();
+        Optional<ResourceKey<@NotNull VillagerProfession>> professionKey = data.profession().unwrapKey();
         if (professionKey.isPresent()) {
-            if (lootTableId.getPath().contains(professionKey.get().getValue().getPath())) {
+            if (lootTableId.getPath().contains(professionKey.get().identifier().getPath())) {
                 return true;
             }
 

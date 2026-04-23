@@ -2,12 +2,12 @@ package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.UnionizedVillagers;
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -20,14 +20,14 @@ public class GuardianNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        int searchRadius = world.getGameRules().getValue(UnionizedVillagers.VIEW_RANGE);
-        Box searchBox = new Box(villagerEntity.getBlockPos()).expand(searchRadius);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        int searchRadius = world.getGameRules().get(UnionizedVillagers.VIEW_RANGE);
+        AABB searchBox = new AABB(Villager.blockPosition()).inflate(searchRadius);
 
-        List<Entity> guardians =  world.getOtherEntities(villagerEntity, searchBox, entity -> entity.isAlive() && !entity.isInvisible() && entity.getType().isIn(UnionizedVillagers.GUARDIANS_ENTITY_TAG));
+        List<Entity> guardians =  world.getEntities(Villager, searchBox, entity -> entity.isAlive() && !entity.isInvisible() && entity.is(UnionizedVillagers.GUARDIANS_ENTITY_TAG));
         boolean isMet = !guardians.isEmpty();
 
-        debug(villagerEntity, isMet, () -> "guardian is at " + (guardians.isEmpty() ? null : guardians.getFirst().getBlockPos()));
+        debug(Villager, isMet, () -> "guardian is at " + (guardians.isEmpty() ? null : guardians.getFirst().blockPosition()));
 
         return isMet;
     }

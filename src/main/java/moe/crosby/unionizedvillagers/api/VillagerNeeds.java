@@ -3,7 +3,7 @@ package moe.crosby.unionizedvillagers.api;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import moe.crosby.unionizedvillagers.impl.UnionizedVillagersImpl;
 import moe.crosby.unionizedvillagers.impl.needs.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 import java.util.Comparator;
 import java.util.List;

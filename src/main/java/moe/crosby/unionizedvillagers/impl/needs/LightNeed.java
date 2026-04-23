@@ -1,11 +1,11 @@
 package moe.crosby.unionizedvillagers.impl.needs;
 
 import moe.crosby.unionizedvillagers.api.VillagerNeed;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
 
 /**
  * Villager need that ensures a minimum amount of light on the villager
@@ -18,18 +18,18 @@ public class LightNeed extends VillagerNeed {
     }
 
     @Override
-    public boolean isMet(ServerWorld world, VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-        boolean nightVision = villagerEntity.hasStatusEffect(StatusEffects.NIGHT_VISION);
+    public boolean isMet(ServerLevel world, Villager Villager, Player playerEntity) {
+        boolean nightVision = Villager.hasEffect(MobEffects.NIGHT_VISION);
 
         if (nightVision) {
-            debug(villagerEntity, true, () -> "villager can see in the dark");
+            debug(Villager, true, () -> "villager can see in the dark");
             return true;
         }
 
-        int lightLevel = world.getLightLevel(villagerEntity.getBlockPos());
+        int lightLevel = world.getRawBrightness(Villager.blockPosition(), 0);
         boolean isMet = lightLevel >= MINIMUM_LIGHT_LEVEL;
 
-        debug(villagerEntity, isMet, () -> "light level is " + lightLevel);
+        debug(Villager, isMet, () -> "light level is " + lightLevel);
 
         return isMet;
     }
