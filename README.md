@@ -1,7 +1,9 @@
 <div align="center">
+  <img src="./assets/big_icon.png" alt="The mod's icon" width="15%">
   <h1>Unionized Villagers</h1>
   <p>The villagers have unionized.</p>
   <p>Serverside only mod.</p>
+  <img src="https://pride-badges.pony.workers.dev/static/v1?label=enbyware&labelColor=%23555&stripeWidth=8&stripeColors=FCF434%2CFFFFFF%2C9C59D1%2C2C2C2C" alt="Enbyware">
 </div>
 
 ## Gameplay
